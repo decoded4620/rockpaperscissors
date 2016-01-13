@@ -1,0 +1,33 @@
+First issue:
+
+Already had MongoDB (windows 64) and Mongo DB Ubuntu 14
+
+
+Step 2. Install Meteor (Win 10)
+
+Running Meteor (dind't work on either my Win10, nor Ubuntu Vritual Machine)
+
+    Same Error;
+
+    This can be caused by MongoDB being unable to write to a local dat
+    Check that you have permissions to write to .meteor/local. MongoDB
+    not support filesystems like NFS that do not allow file locking.
+
+    meteor reset (on Windows fixed issue). 
+
+    REASON: Can't run meteor on shared folder for hypervisor, due to Mongo's inability to obtain a file lock on the db.
+
+Create meteor app
+
+    meteor rockpaperscissors
+    cd rockpaperscissors
+    meteor
+    
+    RESULT: Yay, default page is showing.
+    
+    
+Setup .github repository
+
+    git init
+    git commit -m "initial project addition"
+    
