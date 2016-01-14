@@ -1,14 +1,104 @@
 <head>
   <title>rockpaperscissors</title>
 </head>
-
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
 </body>
 
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+<template name="lobby">
+    <h1>Welcome to the lobby {{playerName}}, join a game</h1>
+    <div class="container">
+        <h2>New Game</h2>
+        <form>
+            <input type="text" name="gameName" value="Game Name (eg. Bows Game)"/>
+	        <input type="submit" value="Create a game"/>
+        </form>
+        <h2>Games in progress</h2>
+        <ul>
+        {{#each games}}
+            {{> game}}
+        {{/each}}
+		</ul>
+    </div>
+
 </template>
+
+<!--  router renders here -->
+<template name="main">
+    <main>
+    {{> navigation}}
+    {{> yield}}
+    <hr/>
+    </main>
+</template>
+
+<template name="navigation"> 
+    <ul>
+        <!-- 
+         <li><a href="{{pathFor route='players/'}}">Profile</a></li>
+         -->
+    </ul>
+    <hr/>
+</template>
+<template name="registerMe">
+       <h1>Rock Paper Scissors...</h1>
+       <p>
+    <img src="http://replycandy.com/wp-content/uploads/Borat-Its-Nice.jpg"/>
+    </p>
+    <div class="hbox">
+	    <h1>Register to play Rock Paper Scissors Now!</h1>
+	    <form>
+	        <input type="text" name="playerName" value="Name (eg. player1)"/>
+	        <input type="submit" value="Join Now"/>
+	    </form>
+    </div>
+</template>
+
+<template name="game">
+    <h3>Game {{gameName}}</h3>
+    <button>Join</button>
+</template>
+
+<template name="startGame">
+    <input type="text" class="game-name"/>
+    <button class="start-game">Start Game</button>
+</template>
+
+<template name="rejoinGame">
+     <h1>Game already in progress</h1>
+     <button class="rejoin-game">Rejoin game</button>
+     <button class="concede-game">Concede</button>
+</template>
+
+<template name="inGame">
+    <h1>Game: {{gameName}}</h1>
+    <div class="hbox">
+        <div class="player1-panel">
+        </div>
+        <div class="player2-panel">
+        
+        </div>
+    </div>
+    <div class='vbox'>
+        <h1>Make your move</h1>
+	    <form>
+	        <input type="radio" name="move" id='rock'      value="r"/>
+	        <label for="rock">Rock</label>
+	        <input type="radio" name="move" id='paper'     value="p"/>
+	        <label for="paper">Paper</label>
+	        <input type="radio" name="move" id='scissors'  value="s"/>
+	        <label for="scissors">Scissors</label>
+	        <input type="submit" value="Go!"/>
+	    </form>
+    </div>
+</template>
+
+<template name="gameOver">
+    <h1>Game Over!</h1>
+    <p>You {{>localPlayerResult}}</p>
+    
+    <form id="play-again">
+        <button class="start-game">Play Again</button>
+        <button class="quit">Quit</button>
+    </form>
+</template>
+ 
