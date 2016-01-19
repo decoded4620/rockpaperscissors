@@ -853,14 +853,15 @@ Db = {
                         
                         currRound = game.rounds[i];
                         
-                        if(currRound.winnerId != null && currRound.winnerId !== undefined){
+                        if(currRound.winners != null && currRound.winners !== undefined){
                             
                             // for every player in the round, mark their win / loss rate
                             for(var j = 0; j < pLen; j++){
                                 var comparePlayer = players[j];
-                                if(comparePlayer._id === currRound.winnerId){
+                                if(currRound.winners.indexOf(comparePlayer.playerId) != -1){
                                     comparePlayer.rounds_won++;
-                                }else {
+                                }
+                                else{
                                     comparePlayer.rounds_lost++;
                                 }
                             }
