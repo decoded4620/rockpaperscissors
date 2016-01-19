@@ -47,4 +47,11 @@ Setup meteor packages for ease of development:
     iron:middleware-stack  added, version 1.0.11
     iron:router            added, version 1.0.12
     iron:url               added, version 1.0.11
+    
+    
+    
+Sources:
+
+    http://meteorcapture.com/a-look-at-local-template-state/
+    https://github.com/iron-meteor/iron-router/blob/devel/Guide.md#server-routing
         

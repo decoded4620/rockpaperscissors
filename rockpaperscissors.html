@@ -1,98 +1,364 @@
 <head>
-  <title>rockpaperscissors</title>
+  <title>Rock Paper Scissors - No Noobs Allowed!</title>
 </head>
-<body>
+<body class="normal-background">
 </body>
 
 <template name="lobby">
-    <h1>Welcome to the lobby {{playerName}}, join a game</h1>
-    <div class="container">
-        <h2>New Game</h2>
-        <form>
-            <input type="text" name="gameName" value="Game Name (eg. Bows Game)"/>
-	        <input type="submit" value="Create a game"/>
-        </form>
-        <h2>Games in progress</h2>
-        <ul>
-        {{#each games}}
-            {{> game}}
-        {{/each}}
-		</ul>
+    {{> navigation}}
+    <div class=" base-layout">
+	    <h1>Game Room: {{roomName}}</h1>
+	    <p><i>Welcome, {{playerName}}, you last logged in on {{lastLogin}}</i></p>
+	    <div class="container">
+	        <div class="create-game-form-container">
+		        <h2>Create A New Game</h2>
+		        <p><i>Simply type the name below and click 'Create a game'. You'll be redirected to the game lobby until players join.</i></p>
+		        <form class="game-form">
+		            <div  class="create-game-text-input" >
+		              Name your game: <input class="create-game-input-base" type="text"  name="gameName" value="Game Name (eg. {{playerName}}'s Game)"/>
+		            </div>
+		            <div  class="create-game-num-input" >
+		              # Players: <input class="create-game-input-base" type="text"  name="minPlayers" value="2"/>
+		            </div>
+		            <div class="create-game-num-input">
+			            Best out of: <input class="create-game-input-base" type="text"  name="maxTurns" value="3"/>
+		            </div>
+		            <div class="create-game-input-container">
+				       <br/><input class="create-game-input" type="submit" name="submit" value="PLAY NOW&nbsp;&gt;&gt;&nbsp;"/>
+		            </div>
+		        </form> 
+	        </div>
+	        <div class="fadeIn games-completed-list">
+	            {{#if hasGamesInProgress}}
+	            <div class="shadow-box">
+			        <h2 class="green-background">Games Currently In Progress / Waiting for Players</h2>
+		            <div class="scrolling-div green-background">
+				        <ul>
+				        {{#each gamesInProgress}}
+				            {{> game}}
+				        {{/each}}
+			            </ul>
+		            </div>
+	            </div>
+	            {{else}}
+	            <div class="shadow-box dark-background light-text">
+	               <p><i>There are no games currently in progress. Please create one!</i></p>
+	            </div>
+	            {{/if}}
+	            {{#if hasCompletedGames}}
+	            <br/>
+                <br/>
+                <div class="shadow-box">
+	            <h2 class="dark-background">Last Few Completed Games</h2>
+		            <div class="scrolling-div blue-background">
+			            <ul>
+			            {{#each gamesCompleted}}
+			                {{> gameComplete}}
+			            {{/each}}
+			            </ul>
+		            </div>
+	            </div>
+	            {{else}}
+	            <div class="shadow-box dark-background light-text">
+                   <p><i>There are no completed games. Please play one!</i></p>
+                </div>
+                {{/if}}
+	            {{#if hasAbandonedGames}}
+	            <br/>
+	            <br/>
+	            <div class="shadow-box">
+		            <h2 class="orange-background">Recently Abandoned Games</h2>
+	                   <div class="scrolling-div orange-background">
+		                <ul>
+		                {{#each gamesAbandoned}}
+		                    {{> gameAbandoned}}
+		                {{/each}}
+		                </ul>
+	                   </div>
+	                 <br/>
+	                 <br/>
+	            </div>
+	            {{else}}
+                <div class="shadow-box dark-background light-text">
+                   <p><i>There are no abandoned games. Server is healthy!</i></p>
+                </div>
+                {{/if}}
+                
+	        </div>
+	    </div>
     </div>
 
 </template>
 
+<template name="leaderboard">
+<div class="base-layout">
+ {{> navigation}}
+ <h2>Leaderboard</h2>
+ <div class="container">
+	 <div class="fadeIn games-completed-list">
+	    <div class="shadow-box">
+		 <div class="scrolling-div full-width full-height">
+		       <table>
+		       <tr><th>Player</th><th>Win/Loss</th><th>Rating (Elo)</th><th>Last Seen</th></tr>
+			   {{#each leaderboardPlayers}}
+			       {{> leaderboardPlayer}}
+			   {{/each}}
+		       </table>
+		   </div>
+		</div>
+	 </div>
+	 </div>
+ </div>
+</template>
+<template name="leaderboardPlayer">
+    <tr><td><a href="/profiles/{{this._id}}">{{this._id}}</a></td><td><span class="win-loss"><b>[{{this.rounds_won}} / {{this.rounds_lost}}]</b></span></td><td>{{this.elo}}</td><td>{{lastLoginDate}}</td></tr>
+</template>
 <!--  router renders here -->
 <template name="main">
-    <main>
-    {{> navigation}}
+    <main class="full-width full-height">
     {{> yield}}
-    <hr/>
     </main>
 </template>
 
 <template name="navigation"> 
-    <ul>
-        <!-- 
-         <li><a href="{{pathFor route='players/'}}">Profile</a></li>
-         -->
-    </ul>
-    <hr/>
+    <div class="navDiv dark-background" style="height:50px;">
+        Welcome,&nbsp;&nbsp;<span class="local-player-tag">{{localPlayerName}}</span> &nbsp;&nbsp;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+        {{#each links}}
+            {{>navlink}}
+        {{/each}}
+    </div>
 </template>
+<template name="navlink">
+    <a href="{{href}}">{{name}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+</template>
+
+
+
 <template name="registerMe">
-       <h1>Rock Paper Scissors...</h1>
-       <p>
-    <img src="http://replycandy.com/wp-content/uploads/Borat-Its-Nice.jpg"/>
-    </p>
-    <div class="hbox">
-	    <h1>Register to play Rock Paper Scissors Now!</h1>
-	    <form>
-	        <input type="text" name="playerName" value="Name (eg. player1)"/>
-	        <input type="submit" value="Join Now"/>
-	    </form>
+    <div class="fadeInNoDelay full-width full-height background-image" style="text-align:center;" >
+       <div style="height:45px;"><br/></div>
+	    <div class="full-width full-height">
+		    <div style="height:68%;"><br/></div>
+		    <div class="login-container">
+		        <div class="login-panel"><br/></div>
+		        <div class="login-panel"><br/></div>
+		        <div class="login-panel">
+				    <form class="fadeInLongDelay login" style="padding-top:0;padding:2px;border:solid 1px #266c8e;">
+				        <div class="full-width blue-background light-text" style="height:20px;text-align:center;padding-top:4px;padding-bottom:4px;"> Login Here </div>
+				        User Name:<input  style="height:22px;" type="text" name="playerName" value="Name (eg. player1)"/>
+				        Password:<input  style="height:22px;" type="password" name="password" value="" secure="true"/>
+				        <div class="full-height"><br/></div>
+				        <input class="login green-background light-text shadow-glow" style="border:solid 2px #a2FFa2;" type="submit" value="Play RoShamBo Now!"/>
+				    </form>
+		        </div>
+			    <div class="login-panel"><br/></div>
+			    <div class="login-panel"><br/></div>
+		    </div>
+	    </div>
     </div>
 </template>
 
 <template name="game">
-    <h3>Game {{gameName}}</h3>
-    <button>Join</button>
-</template>
-
-<template name="startGame">
-    <input type="text" class="game-name"/>
-    <button class="start-game">Start Game</button>
-</template>
-
-<template name="rejoinGame">
-     <h1>Game already in progress</h1>
-     <button class="rejoin-game">Rejoin game</button>
-     <button class="concede-game">Concede</button>
-</template>
-
-<template name="inGame">
-    <h1>Game: {{gameName}}</h1>
-    <div class="hbox">
-        <div class="player1-panel">
+    <div class="game-container base-layout">
+	    <div class="game-info">
+	        <p>Game <b>{{gameName}}</b>&nbsp;&nbsp;&nbsp;&nbsp;[Owner: <b>{{ownerName}}</b>]    
+	        {{#if waitingForPlayers}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button>Join Game [{{gameName}}]</button>{{/if}}</p>
+	    </div>
+        <div class ="fit-to-content">
+            <div class="game-status">
+                 Status: <b>{{gameStatusLabel}}</b>
+            </div> 
+            <div class="full-width" style="padding-left:5px;">
+	            <b>Roster</b><br/>
+	             <ol>
+	              {{#each players}}
+	              <li>
+	                  <div class="player-container">
+	                      <div class="player-info"><a href="/profiles/{{this._id}}">{{this._id}}</a></div>
+	                  </div>
+	              </li>
+	              {{/each}}
+	            </ol>
+            </div>
         </div>
-        <div class="player2-panel">
-        
-        </div>
+        <div class ="game-container">
+                <div class="player-container">
+                   <h3 class="green-background">Results</h3>
+                    <table class="player-container">
+                        <tr><th>Round</th><th>Winner</th><th>Loser</th><th>Winning Move</th></tr>
+                         {{#each gameRounds}}
+                              {{ >gameRound}}
+                         {{/each}}
+                    </table> 
+                </div>
+            </div>
+     </div>
+</template>
+
+<template name="gameComplete">
+    <div class="game-container base-layout">
+            <div class="game-info-complete">
+                <h2 class="dark-background muted-text"><span class="orange-text"><b>{{gameName}}</b></span>&nbsp;&nbsp;&nbsp;Owner: <b>{{ownerName}}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="green-text">Winner: {{winner_id}}</span></h2>
+            </div>
+           <div class ="game-container">
+                <div class="player-info">
+	                <table class="player-container">
+		                <tr><th>Player</th><th>Win/Loss</th><th></th></tr>
+		                 {{#each players}}
+		                 <tr><td><a href="/profiles/{{this._id}}">{{this._id}}</a></td><td><span class="win-loss"><b>[{{this.rounds_won}} / {{this.rounds_lost}}]</b></span></td><td></td></tr>
+		                 {{/each}}
+	                </table> 
+                </div>
+           </div>
+           <div class ="game-container">
+                <div class="player-container">
+                   <h3 class="green-background">Results</h3>
+                    <table class="player-container">
+                        <tr><th>Round</th><th>Winners</th><th>Winning Move</th><th></th></tr>
+                         {{#each gameRounds}}
+                              {{ >gameRound}}
+                         {{/each}}
+                    </table> 
+                </div>
+            </div>
+       </div>
+</template>
+<template name="gameRound">
+   <tr><td>{{this.num}}</td><td>{{roundWinnerNames}}</td><td>{{winningMove}}</td></tr>
+</template>
+
+<template name="gameAbandoned">
+<div class="game-container base-layout">
+            <div class="game-info-complete orange-background">
+                Game <b>{{gameName}}</b> [Owner: <b>{{ownerName}}</b>]
+            </div>
+           <div class ="game-container">
+                <div class="player-container">
+                <hr/>
+                </div>
+           </div>
+       </div>
+    <!-- 
+    <div class="game-container base-layout full-width">
+            <div class="game-info-complete full-width">
+                <a href="game/{{gameId}}"><b>{{gameName}}</b></a> [Owner: <a href="/profile/{{ownername}}/"><b>{{ownerName}}</b></a>]
+            </div>
+       </div>
+     -->
+</template>
+<template name="profileContainer">
+    <div class="player-container">
+	    <div class="dark-background panel" style="padding-left:10px;padding-right:10px;">
+	    <p><b>{{this._id}}</b></p>
+	    </div>
+	    <div class="blue-background panel" style="padding-left:10px;padding-right:10px;">
+	    <p><b>Elo Score:</b> {{elo}}</p>
+	    </div>
+	    <div class="green-background panel" style="padding-left:10px;padding-right:10px;">
+	    <p><b>Games Won:</b> {{wins}}</p>
+	    </div>
+	    <div class="orange-background panel" style="padding-left:10px;padding-right:10px;">
+	    <p><b>Rounds Won:</b> {{rounds_won}}</p>
+	    </div>
     </div>
-    <div class='vbox'>
-        <h1>Make your move</h1>
+</template>
+<template name="myProfile">
+    {{> navigation}}
+    <div class="base-layout dark-background full-width">
+    <h1>Profile</h1>
+       {{#with playerProfile}}
+         {{ > profileContainer}}
+        {{/with}}
+     </div>
+</template>
+<template name="theirProfile">
+    {{> navigation}}
+    <div class="base-layout dark-background full-width">
+    <h1>Remote Player Profile</h1>
+        {{#with remoteProfile}}
+         {{ > profileContainer}}
+        {{/with}}
+     </div>
+</template>
+<template name="rejoinGame">
+    <div class="base-layout">
+	     <h1>Game already in progress</h1>
+	     <button class="rejoin-game">Rejoin game</button>
+	     <button class="concede-game">Concede</button>
+	 </div>
+</template>
+
+<template name="waitingForPlayers">
+    {{> navigation}}
+    <div class="base-layout">
+	    <h1>Waiting for players to join</h1>
+	    <p>You'll be redirected to the game momentarily...</p>
+    </div>
+</template>
+
+<template name="inGameTheirTurn">
+    {{> navigation}}
+    <div class="base-layout">
+	    <h1>Game: {{gameName}}</h1>
+	    <p>waiting for <span class="player-tag">{{opponent}}</span> to move</p>
+    </div>
+</template>
+
+<template name="inGameMyTurn">
+    {{> navigation}}
+    <div class="base-layout full-width full-height green-background">
+	    <h3>Playing Game: {{gameName}}</h3>
+	    <div class="center-content">
+	        <br/>
+	        <div class="panel">
+	        <br/>
+	        </div>
+	        
+	        <div class="panel shadow-box">
+		        <h4>Make your move</h4>
+				<form class="game-form">
+		            <input class="game-form-radio" type="radio" name="moveChoice"  value="r" checked/>Rock
+		            <input class="game-form-radio" type="radio" name="moveChoice"  value="p"/>Paper
+		            <input class="game-form-radio" type="radio" name="moveChoice"  value="s"/>Scissors
+		            <div style="height:30%;"><br/></div>
+		            <input type="submit" value="MOVE!"/>
+		        </form>
+	        </div> 
+	        <div class="panel">
+	        <br/>
+	        </div>
+	    </div>
+    </div>
+</template>
+
+<!-- Game Results Template -->
+<template name="myGameResults">
+    {{> navigation}}
+    <div class="base-layout">
+	    <h1>Game: {{gameName}}</h1>
+	    <h2>Results!</h2>
+	    <p class="winner">Winner: {{winner}}</p>
+	    <p class="winner">Winning Score: {{winScore}}</p>
+	    <ul>
+	    {{#each losers}}
+	        {{> loser}}
+	    {{/each}}
+	    </ul>
 	    <form>
-	        <input type="radio" name="move" id='rock'      value="r"/>
-	        <label for="rock">Rock</label>
-	        <input type="radio" name="move" id='paper'     value="p"/>
-	        <label for="paper">Paper</label>
-	        <input type="radio" name="move" id='scissors'  value="s"/>
-	        <label for="scissors">Scissors</label>
-	        <input type="submit" value="Go!"/>
+	        <input type="submit" value="Back to lobby"/>
 	    </form>
     </div>
 </template>
 
+<!-- Loser info Template -->
+<template name="loser">
+    <li>Name: {{name}} <ol><li>Score: {{score}}</li></ol></li>
+</template>
+
+
+
 <template name="gameOver">
+    {{> navigation}}
     <h1>Game Over!</h1>
     <p>You {{>localPlayerResult}}</p>
     

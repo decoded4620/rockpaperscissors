@@ -1,48 +1,262 @@
 /* CSS declarations go here */
 body {
   font-family: sans-serif;
-  background-color: #979797;
-  background-attachment: fixed;
-
+  color:#F6F6E8;
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-
   padding: 0;
   margin: 0;
-
-  font-size: 14px;
+  font-size: 12px;
+  overflow:hidden;
+}
+.fadeInLongDelay{
+    -webkit-animation-delay: 2s;
+    -moz-animation-delay: 2s;
+    animation-delay: 2s;
+    -webkit-animation: fadein .80s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadein .80s; /* Firefox < 16 */
+    -ms-animation: fadein .80s; /* Internet Explorer */
+    -o-animation: fadein .80s; /* Opera < 12.1 */
+    animation: fadein .80s;
+}
+.fadeIn{
+	-webkit-animation-delay: 0.5s;
+    -moz-animation-delay: 0.5s;
+    animation-delay: 0.5s;
+    -webkit-animation: fadein .80s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadein .80s; /* Firefox < 16 */
+    -ms-animation: fadein .80s; /* Internet Explorer */
+    -o-animation: fadein .80s; /* Opera < 12.1 */
+    animation: fadein .80s;
+}
+.fadeInNoDelay{
+   -webkit-animation-delay: 0s;
+    -moz-animation-delay: 0s;
+    animation-delay: 0s;
+    -webkit-animation: fadein .80s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadein .80s; /* Firefox < 16 */
+    -ms-animation: fadein .80s; /* Internet Explorer */
+    -o-animation: fadein .80s; /* Opera < 12.1 */
+    animation: fadein .80s;
+}
+.fadeOut{
+	-webkit-animation-delay: 0.3s;
+    -moz-animation-delay: 0.3s;
+    animation-delay: 0.3s;
+    -webkit-animation: fadeout .80s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadeout .80s; /* Firefox < 16 */
+    -ms-animation: fadeout .80s; /* Internet Explorer */
+    -o-animation: fadeout .80s; /* Opera < 12.1 */
+    animation: fadeout .80s;
+}
+.background-image{
+	background-attachment: fixed;
+	background-position: center; 
+	background-repeat:no-repeat; 
+	background-image:url('img/bg.jpg');
+}
+table{
+	width:100%;
 }
 
+tr {
+	padding:0;
+	margin:0;
+	width:200px;
+}
+hr{
+	border: solid 1px;
+}
+th {
+    background-color:#323232;
+}
+div.base-layout{
+    color:#F6F6E8;
+}
+.local-player-tag{
+	text-decoration:underline;
+	color:#EE9900;
+}
+.player-tag{
+    text-decoration:none;
+    color:#F6F6E8;
+}
+.win-loss{
+    text-decoration:none;
+    color:#6A9A1F;
+}
+.full-width{
+	width:100%;
+}
+.full-height{
+	height:100%;
+}
 .container {
-  max-width: 600px;
-  margin: 0 auto;
+  display:table-cell;
+  vertical-align:middle;
+  max-width: 100%;
+  width:80%;
+  min-width:800px;
+  padding-top:20px;
+  padding-left:40px;
+  padding-right:40px;
   min-height: 100%;
-  background: white;
+  max-height:100%;
+  position:absolute;
+}
+.dark-background{
+	background-color: #323232;
+}
+.normal-background{
+	background-color: #404040;
+}
+.green-background{
+  background-color:#728c31;
+}
+.orange-background{
+  background-color:#7e433f;
+}
+.blue-background{
+  background-color:#266c8e;
+}
+.muted-text{
+  color:#525252;
+}
+.green-text{
+  color:#728c31;
+}
+.orange-text{
+  color:#7e433f;
+}
+.blue-text{
+  color:#266c8e;
 }
 
+.shadow-glow{
+	box-shadow:0px 0px 8px #002200;
+}
+.light-text{
+	color:#FEFEFE;
+}
+.dark-text{
+    color:#323232;
+}
+.shadow-box{
+	box-shadow: 2px 2px 10px #222222;
+}
+div.scrolling-div{
+	display:inline-block; position:relative; overflow:auto; overflow-x:hidden; max-height:250px; border:solid 1px #596e29;
+}
+div.game-container{
+	background-color: #404040;
+	position: relative; 
+	overflow: hidden; 
+	padding:0; margin:0; 
+	display: inline-block; 
+	width:100%;
+}
+div.create-game-input-container{
+	position:relative; padding:0; margin:0; float:left;
+}
+input.create-game-input{
+	background-color:#6A9A1F; max-width:220px; color:#F6F6E8; padding-left:10px; padding-right:2px;
+}
+div.create-game-input-container{
+	position:relative; margin:0; padding:0;
+}
+input.create-game-input-base{
+    padding-left:6px;
+}
+div.create-game-num-input{
+    max-height:30px; max-width:100px; padding-left:10px; padding-right:10px; position:relative; float:left;
+}
+div.create-game-text-input{
+	max-height:30px; max-width:250px; padding-left:10px; padding-right:10px; position:relative; float:left;
+}
+div.create-game-form-container{
+	background-color:#323232;
+	width:80%;
+	padding:2px;
+	padding-top:10px;
+	padding-left:10px;
+	padding-right:10px;
+	padding-bottom:10px;
+	overflow:hidden;
+}
+div.login-container{
+    display: table;
+    table-layout: fixed;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+div.login-panel{
+    display: table-cell;
+    table-layout: fixed;
+    position:relative;
+}
+.player-container{
+	display: table;
+    table-layout: fixed;
+	max-width:100%;
+	width:100%;
+}
+div.fit-to-content{
+	padding:0; margin:0; position: relative; width:100%; height:auto; float:left;
+}
+div.game-info-complete{
+    position:relative; padding:0; margin:0; width:100%;height:100%; float:left;
+}
+div.game-info{
+	position:relative; padding:0; margin:0; width:100%;height:100%; background-color:#5b6f28; float:left;
+}
+div.game-status{
+	position:relative; padding:4px; margin:0; width:100%;height:100%; background-color:#343434; float:left;
+}
+div.player-info-l{
+	position:relative; padding:0; margin:0; width:100%; max-width:100%; height:auto; max-height:100%; float:left;
+}
+div.player-info-r{
+    padding:0; margin:0; width:100%; max-width:100%; height:auto; max-height:100%;
+}
 header {
   background: #d2edf4;
   background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);
   padding: 20px 15px 15px 15px;
   position: relative;
 }
-div .player2-panel{
-    background-color:darkgrey;
+#trbl
+div.navDiv{
+	color:#F6F6E8;
+	font-size:15;
+	position: relative; 
+    overflow: hidden; 
 }
-div .player1-panel{
-	background-color:darkgrey;
-}
-div .hbox{
+div.hbox{
 	float:left;
-	background-color:darkgrey;
+	position:relative;
+	display:block;
 }
 
-div .vbox{
+div.vbox{
+	position:relative;
 	float:none;
 	display:block;
+}
+div.center-content{
+	position:relative;
+	display:block;
+}
+div.games-completed-list{
+	width:80%;
+}
+div.panel{
+	flex-basis: 100%;
+	display:table-cell;
+	float:left;
 }
 h1 {
   font-size: 1.5em;
@@ -51,32 +265,48 @@ h1 {
   display: inline-block;
   margin-right: 1em;
 }
-
-form {
-  margin-top: 10px;
-  margin-bottom: -10px;
+ht.home{
+	color:#00ACE9;
+}
+form.login{
+	color:#121256;
+	font-weight:bold;
+	text-align:left;
+}
+input[type=submit].login {
+    padding:5px 15px; 
+    border:0 none;
+    cursor:pointer;
+}
+form.create-game {
   position: relative;
   display:block;
   width:100%
 }
-
+form.game-form{
+  position:relative;
+  width:100%;
+}
+radio.game-form-radio{
+    color:#FF0FAA;
+    background-color:#FFCCFF;
+}
 input {
   box-sizing: border-box;
   padding: 10px 0;
-  width: 50%;
+  width: 100%;
   font-size: 1em;
-}
-
-input:focus{
-  outline: 0;
 }
 
 ul {
   margin: 0;
   padding: 0;
-  background: white;
 }
 
+a{
+	color:#F6F6E8;
+	text-decoration: none;
+}
 .delete {
   float: right;
   font-weight: bold;
@@ -86,49 +316,24 @@ ul {
   position: relative;
 }
 
+hr {
+  color:#343434;
+}
+
+h1, h2, h3, h4{
+    padding:0;
+    margin:0;
+    padding-left:4px;
+}
+
 li {
   position: relative;
   list-style: none;
-  padding: 15px;
-  border-bottom: #eee solid 1px;
 }
 
-li .text {
-  margin-left: 10px;
-}
 
-li.checked {
-  color: #888;
-}
-
-li.checked .text {
-  text-decoration: line-through;
-}
-
-li.private {
-  background: #eee;
-  border-color: #ddd;
-}
-
-header .hide-completed {
-  float: right;
-}
-
-.toggle-private {
-  margin-left: 5px;
-}
-
-@media (max-width: 600px) {
+@media (max-width: 1000px) {
   li {
     padding: 12px 15px;
-  }
-
-  .search {
-    width: 150px;
-    clear: both;
-  }
-
-  .new-task input {
-    padding-bottom: 5px;
   }
 }
