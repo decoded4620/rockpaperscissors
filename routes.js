@@ -78,6 +78,25 @@ Router.route('/game/', function(){
       }
   }
 });
+
+Router.route('/logout',function(){
+    var playerId = Session.get(SessionKeys.PLAYER_ID);
+    var token = Session.get(SessionKeys.TOKEN);
+    console.log("client::logout()");
+    
+    Meteor.call('playerMethods_logout', playerId, token, function(error,result){
+        
+        console.log("client::logout::result() - " + error + ", " + result);
+        if(!error || error === undefined){
+            Delegates.Route.on_playerMethods_logout(result);
+        }
+        else{
+            console.log("fail");
+            Router.go('/register');
+        }
+    });
+});
+
  Router.route('/:username',function(){
      console.log("registerMe::submit form(" + this.params.username + ")");
      var userName = this.params.username;
@@ -152,23 +171,6 @@ Router.route('/player/:playerName',function()
   }
   
 }/*, {where:"server"}*/);
-Router.route('/logout',function(){
-    var playerId = Session.get(SessionKeys.PLAYER_ID);
-    var token = Session.get(SessionKeys.TOKEN);
-    console.log("client::logout()");
-    
-    Meteor.call('playerMethods_logout', playerId, token, function(error,result){
-        
-        console.log("client::logout::result() - " + error + ", " + result);
-        if(!error || error === undefined){
-            Delegates.Route.on_playerMethods_logout(result);
-        }
-        else{
-            console.log("fail");
-            Router.go('/register');
-        }
-    });
-});
 
 Router.route('/game/:gameId', function(){
     console.log("Route:/game/" + this.params.gameId);
