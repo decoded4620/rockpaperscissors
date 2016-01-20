@@ -78,7 +78,26 @@ Router.route('/game/', function(){
       }
   }
 });
-
+ Router.route('/:username',function(){
+     console.log("registerMe::submit form(" + this.params.username + ")");
+     var userName = this.params.username;
+     Meteor.call("playerMethods_createPlayer", userName, function(error, results){
+        if(!error || error === undefined){
+            console.log("playerMethods_createPlayer::result() " + results);
+            if(results.status === HTTPStatusCodes.OK){
+               // redirect to players page
+               Router.go('/player/' + userName);
+            }
+            else{
+                console.log("Error creating Player:" + userName);
+                console.log(results);
+            }
+        }
+        else{
+            console.log("playerMethods_createPlayer::error() " + error);
+        }
+     });
+ });
 
 // Variable based routes
 Router.route('/game/:gameId/waitForPlayers', function(){

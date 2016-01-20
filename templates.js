@@ -348,24 +348,11 @@ if (Meteor.isClient) {
             event.preventDefault();
             
             var playerName = event.target.playerName.value;
-            console.log("registerMe::submit form(" + playerName + ")");
             
-            Meteor.call("playerMethods_createPlayer", playerName, function(error, results){
-               if(!error || error === undefined){
-                   console.log("playerMethods_createPlayer::result() " + results);
-                   if(results.status === HTTPStatusCodes.OK){
-                      // redirect to players page
-                      Router.go('/player/' + playerName);
-                   }
-                   else{
-                       console.log("Error creating Player:");
-                       console.log(results);
-                   }
-               }
-               else{
-                   console.log("playerMethods_createPlayer::error() " + error);
-               }
-            });
+            // logs in.
+            Router.go('/' + playerName);
+            
+            console.log("registerMe::submit form(" + playerName + ")");
         }
     });
     
