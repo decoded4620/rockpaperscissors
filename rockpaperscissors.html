@@ -7,10 +7,10 @@
 <template name="lobby">
     {{> navigation}}
     <div class=" base-layout">
-        <h1>Game Room: {{roomName}}</h1>
-        <p><i>Welcome, {{playerName}}, you last logged in on {{lastLogin}}</i></p>
+        <h1>Game Room: {{roomName}} Waiting for a game...</h1>
+        
+           <!-- 
         <div class="container">
-           <!--  Create form -->
             <div class="create-game-form-container inset-big">
                 <h2>Create A New Game</h2>
                 <p><i>Simply type the name below and click 'Create a game'. You'll be redirected to the game lobby until players join.</i></p>
@@ -18,57 +18,21 @@
                     <div  class="create-game-text-input" >
                       Name your game: <input class="create-game-input-base" type="text"  name="gameName" value="Game Name (eg. {{playerName}}'s Game)"/>
                     </div>
-                    <!-- 
                     <div  class="create-game-num-input" >
                       # Players: <input class="create-game-input-base" type="text"  name="minPlayers" value="2"/>
                     </div>
                     <div class="create-game-num-input">
                         Best out of: <input class="create-game-input-base" type="text"  name="maxTurns" value="1"/>
                     </div>
-                     -->
                     <div class="create-game-input-container">
                        <br/><input class="create-game-input" type="submit" name="submit" value="PLAY NOW&nbsp;&gt;&gt;&nbsp;"/>
                     </div>
                 </form> 
             </div>
-            <div class="fadeIn games-container">
-                {{#if hasGamesInProgress}}
-                <p>Games in progress</p>
-                <div class="shadow-box auto-width">
-                    <div class="scrolling-div full-width no-inset">
-                    {{#each gamesInProgress}}
-                        {{> game}}
-                    {{/each}}
-                    </div>
-                </div>
-                {{else}}
-                <div class="shadow-box dark-background light-text">
-                   <p><i>There are no games currently in progress. Please create one!</i></p>
-                </div>
-                {{/if}}
-                
-                {{#if hasAbandonedGames}}
-                <br/>
-                <br/>
-                <div class="shadow-box">
-                       <div class="scrolling-div orange-background">
-                        <ul>
-                        {{#each gamesAbandoned}}
-                            {{> gameAbandoned}}
-                        {{/each}}
-                        </ul>
-                       </div>
-                     <br/>
-                     <br/>
-                </div>
-                {{else}}
-                <div class="shadow-box dark-background light-text">
-                   <p><i>There are no abandoned games. Server is healthy!</i></p>
-                </div>
-                {{/if}}
-                
-            </div>
+            
         </div>
+            -->
+            
     </div>
 
 </template>
@@ -92,27 +56,66 @@
      </div>
      </div>
  </div>
- {{#if hasCompletedGames}}
+ <div class="fadeIn games-container">
+    {{#if hasCompletedGames}}
     <br/>
     <h3>Completed games</h3>
     <div class="shadow-box">
-        <div class="scrolling-div" style="height:400px;">
+       <div class="scrolling-div" style="height:400px;">
             <ul>
             {{#each gamesCompleted}}
-                {{> gameComplete}}
+            {{> gameComplete}}
             {{/each}}
             </ul>
+       </div>
+    </div>
+        {{else}}
+	<div class="shadow-box dark-background light-text">
+	   <p><i>There are no completed games. Please play one!</i></p>
+	</div>
+	{{/if}}
+    {{#if hasGamesInProgress}}
+    <p>Games in progress</p>
+    <div class="shadow-box auto-width">
+        <div class="scrolling-div full-width no-inset">
+        {{#each gamesInProgress}}
+            {{> game}}
+        {{/each}}
         </div>
     </div>
     {{else}}
     <div class="shadow-box dark-background light-text">
-       <p><i>There are no completed games. Please play one!</i></p>
+       <p><i>There are no games currently in progress. Please create one!</i></p>
     </div>
     {{/if}}
+    
+    {{#if hasAbandonedGames}}
+    <br/>
+    <br/>
+    <div class="shadow-box">
+           <div class="scrolling-div orange-background">
+            <ul>
+            {{#each gamesAbandoned}}
+                {{> gameAbandoned}}
+            {{/each}}
+            </ul>
+           </div>
+         <br/>
+         <br/>
+    </div>
+    {{else}}
+    <div class="shadow-box dark-background light-text">
+       <p><i>There are no abandoned games. Server is healthy!</i></p>
+    </div>
+    {{/if}}
+    </div>
 </template>
+
 <template name="leaderboardPlayer">
     <tr><td><a href="/profiles/{{this._id}}">{{this._id}}</a></td><td><span class="win-loss"><b>[{{this.rounds_won}} / {{this.rounds_lost}}]</b></span></td><td>{{this.elo}}</td><td>{{lastLoginDate}}</td></tr>
 </template>
+
+
 <!--  router renders here -->
 <template name="main">
     <main class="full-width full-height">
@@ -126,6 +129,7 @@
         {{#each links}}
             {{>navlink}}
         {{/each}}
+	    <p><i>Welcome, {{playerName}}, you last logged in on {{lastLogin}}</i></p>
     </div>
 </template>
 
@@ -379,7 +383,7 @@
                 <tr>
                 <td colspan="2">
 	                <div class="full-width" align="center">
-	                   <form><input type="submit" value="Back to lobby"/></form>
+	                   <form id="playAgain"><input type="submit" value="PLAY AGAIN"/></form><form  id="leaderboard"><input type="submit" value="LEADERBOARD"/></form>
 	                </div>
                 </td>
                 </tr>

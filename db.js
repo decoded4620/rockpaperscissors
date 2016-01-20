@@ -117,6 +117,35 @@ Db = {
                 console.log("Auth.isPlayerTokenValid - complete: player token (" + playerToken + ") INVALID!")
             }
             return retVal;
+        },
+        createGame:function(gameName, playerId, token){
+            
+            if(Meteor.isClient){
+                
+                // TODO
+                var minPlayers  = 2;
+                var maxTurns    = 1;
+                
+                console.log("Db.Auth.createGame(" + gameName + ", " + playerId + ", " + token + ")");
+                
+                Meteor.call("gameMethods_createGame", gameName, minPlayers, maxTurns, playerId, token, function(error,results){
+                    if(!error || error === undefined){
+                        var game = results.game;
+                        
+                        if(game != null && game !== undefined){
+                            Session.set(SessionKeys.WAIT_FOR_GAME_ID,game._id);
+                            Session.set(SessionKeys.CURRENT_GAME_NAME,game.game_name);
+                            
+                            // enters the game
+                            Router.go('/game/'+game._id);
+                        }
+                    }
+                    else{
+                        // back to default room
+                        Router.go('/rooms/'+ Db.RoomDB.DEFAULT_ROOM_ID);
+                    }
+                });
+            }
         }
     },
     //=======================================================================================
@@ -350,10 +379,10 @@ Db = {
         /**
          * Creates a game and sets this player as the owner
          */
-        createGame:function(gameName, minPlayers, maxTurns, playerId, playerToken){
+        createGame:function(gameName, minPlayers, maxTurns, playerId, playerToken, autogen = true){
             
             var retVal = null;
-//          console.log("Db.GameDB.createGame(" + gameName + ", " + playerId + "," + playerToken + ")");
+          console.log("Db.GameDB.createGame(" + gameName + ", " + playerId + "," + playerToken + ")");
             
             // just check the token, no update for now
             if(Db.Auth.isPlayerTokenValid(playerId, playerToken, true)){
@@ -361,8 +390,18 @@ Db = {
                 var gameId  = gameName.toLowerCase().replace(/ /g, "");
                 var game    = this.findGame(gameId);
                 
+                if(game != null && game.status != Db.Constants.GameStatus.WAITING_FOR_PLAYERS && autogen){
+                    
+                    console.log("Game exists, creating a random id for a new game");
+                    // add a 'now' seed to the game id
+                    gameId = gameId  + (new Date()).getTime().toString();
+                    
+                    // null out the game we found using the raw name.
+                    game = null;
+                }
+                
                 if(game == null){
-//                    console.log("Db.GameDB.createGame - game " + gameId + " doesn't exist, creating it!");
+                    console.log("Db.GameDB.createGame - creating game " + gameName + ", with id: " + gameId );
                     game            = new Db.Objects.Game();
                     game.game_name  = gameName;
                     game._id        = gameId;

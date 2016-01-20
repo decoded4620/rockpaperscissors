@@ -69,6 +69,9 @@ if (Meteor.isClient) {
     };
     
     var navHelpers = {
+            lastLogin:function(){
+                return (new Date(Session.get(SessionKeys.LAST_LOGIN_TIME))).toString();
+            },
             localPlayerName:function(){
                 return Session.get(SessionKeys.PLAYER_ID);
             },
@@ -94,7 +97,7 @@ if (Meteor.isClient) {
                         linkList[linkList.length] = {href:"/profile", name:"My Profile"};
                     
                         if(Session.get(SessionKeys.PLAYER_ROOM_ID) != null){
-                            linkList[linkList.length] = {href:"/rooms/" + Session.get(SessionKeys.PLAYER_ROOM_ID), name:"Go to: " + Session.get(SessionKeys.PLAYER_ROOM_ID)};
+                            linkList[linkList.length] = {href:"/rooms/" + Session.get(SessionKeys.PLAYER_ROOM_ID), name:"Play Again!"};
                         }
                     }
                 }
@@ -108,9 +111,7 @@ if (Meteor.isClient) {
      * Lobby Helper Events and Data
      */
     Template.lobby.helpers({
-        lastLogin:function(){
-            return (new Date(Session.get(SessionKeys.LAST_LOGIN_TIME))).toUTCString();
-        },
+        
         playerName:function(){
             return Session.get(SessionKeys.PLAYER_ID);
         },
@@ -155,21 +156,18 @@ if (Meteor.isClient) {
             console.log(lbPlayers);
             return lbPlayers;
         },
-        // only returns games that are ready for players to join. as soon as all players are there,
         gamesInProgress:function(){
             return Db.Collections.Games.find({$or:[{status:Db.Constants.GameStatus.IN_PROGRESS}, {status:Db.Constants.GameStatus.WAITING_FOR_PLAYERS}]}, {limit:20, sort:{status:1}});
         },
         hasGamesInProgress:function(){
             return Db.Collections.Games.find({$or:[{status:Db.Constants.GameStatus.IN_PROGRESS}, {status:Db.Constants.GameStatus.WAITING_FOR_PLAYERS}]}).fetch().length > 0;
         },
-        // only returns games that are ready for players to join. as soon as all players are there,
         gamesCompleted:function(){
             return Db.Collections.Games.find({status:Db.Constants.GameStatus.COMPLETE});
         },
         hasCompletedGames:function(){
             return Db.Collections.Games.find({status:Db.Constants.GameStatus.COMPLETE}).fetch().length > 0;
         },
-        // only returns games that are ready for players to join. as soon as all players are there,
         gamesAbandoned:function(){
             return Db.Collections.Games.find({status:Db.Constants.GameStatus.ABANDONED});
         },
@@ -177,7 +175,62 @@ if (Meteor.isClient) {
             return Db.Collections.Games.find({status:Db.Constants.GameStatus.ABANDONED}).fetch().length > 0;
         }
     });
-    
+    Template.lobby.rendered = function(){
+        console.log("Template.lobby.rendered: " + this.rendered);
+        if(this.rendered == true){
+            return;
+        }
+        this.rendered = true;
+        /*var autoJoinInterval = */
+        Meteor.setTimeout(function(){
+            
+            var gip  = Db.Collections.Games.find({status:Db.Constants.GameStatus.WAITING_FOR_PLAYERS}, {limit:3}).fetch();
+            var gLen = gip.length;
+            console.log("create or join a game, " + gLen + " games in progress");
+            for(var i = 0; i < gLen; ++i){
+                console.log("create ");
+                console.log(gip);
+                // SANITY check in case someone joined while we fetched.
+                if(gip[i].status == Db.Constants.GameStatus.WAITING_FOR_PLAYERS){
+                    
+                    console.log("Found a game!");
+                    // stop checking
+//                    Meteor.clearInterval(autoJoinInterval)
+                    Router.go('/game/' + gip[i]._id );
+                    return;
+                }
+            }
+            
+            var playerId    = Session.get(SessionKeys.PLAYER_ID);
+            var token       = Session.get(SessionKeys.TOKEN);
+            
+            var newGameName = playerId + "'s Game";
+
+            var game = Db.GameDB.findGame(newGameName);
+            if(game == null || game.status != Db.Constatns.GameStatus.WAITING_FOR_PLAYERS){
+                // create the game with the same ID, using 'auto-gen' to generate a new id
+                // for a game with the same name.
+                //
+                Db.Auth.createGame( newGameName, playerId, token);
+            }
+            else {
+                if(game.status == Db.Constants.GameStatus.WAITING_FOR_PLAYERS){
+                    
+                    if(game.player_ids.indexOf(playerId) == -1){
+                            
+                        // we can join automatically
+                        Session.set(SessionKeys.WAIT_FOR_GAME_ID,game._id);
+                        Session.set(SessionKeys.CURRENT_GAME_NAME,game.game_name);
+                        Router.go('/game/' + game._id);
+                    }
+                }
+                else{
+                    // this will look for a new game.
+                    Router.go('/lobby');
+                }
+            }
+        }, 1000);
+      };
     /**
      * Lobby Template Events
      */
@@ -200,23 +253,7 @@ if (Meteor.isClient) {
             // precheck if game is available.
             var game = Db.GameDB.findGame(gameName);
             if(game == null){
-                Meteor.call("gameMethods_createGame", gameName, minPlayers, maxTurns, playerId, token, function(error,results){
-                    if(!error || error === undefined){
-                        var game = results.game;
-                        
-                        if(game != null && game !== undefined){
-                            Session.set(SessionKeys.WAIT_FOR_GAME_ID,game._id);
-                            Session.set(SessionKeys.CURRENT_GAME_NAME,game.game_name);
-                            
-                            // enters the game
-                            Router.go('/game/'+game._id);
-                        }
-                    }
-                    else{
-                        // back to default room
-                        Router.go('/rooms/'+ Db.RoomDB.DEFAULT_ROOM_ID);
-                    }
-                });
+                Db.Auth.createGame( gameName, playerId, token);
             }
             else {
                 if(game.status == Db.Constants.GameStatus.WAITING_FOR_PLAYERS){
@@ -226,7 +263,8 @@ if (Meteor.isClient) {
                     Router.go('/game/' + game._id);
                 }
                 else{
-                    console.warn("** TODO: implement **");
+                    // this will look for a new game.
+                    Router.go('/lobby');
                 }
             }
         }
@@ -319,14 +357,24 @@ if (Meteor.isClient) {
         'submit form':function(event){
             console.log("back to default room: " + Db.RoomDB.DEFAULT_ROOM_ID);
             event.preventDefault();
-            
-            Router.go('/rooms/' + Db.RoomDB.DEFAULT_ROOM_ID);
+            console.log(event);
+            switch(event.currentTarget.id){
+                case 'playAgain':
+                    Router.go('/rooms/' + Db.RoomDB.DEFAULT_ROOM_ID);
+                    break;
+                case 'leaderboard':
+                    Router.go('/leaderboard');
+                    break;
+                 default:
+                     break;
+            }
         }
     })
   
     Template.gameAbandoned.helpers(gameHelpers);
     Template.gameComplete.helpers(gameHelpers);
     Template.game.helpers(gameHelpers);
+    
     Template.gameRound.helpers({
        roundWinnerNames:function(){
            return this.winners.join(",");
@@ -341,7 +389,7 @@ if (Meteor.isClient) {
             Router.go('/game/'+ this._id );
         }
     });
-
+    
     Template.registerMe.events({
         'submit form': function (event) {
             // prevent any shenanigans.
