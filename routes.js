@@ -79,45 +79,14 @@ Router.route('/game/', function(){
   }
 });
 
-Router.route('/logout',function(){
-    var playerId = Session.get(SessionKeys.PLAYER_ID);
-    var token = Session.get(SessionKeys.TOKEN);
-    console.log("client::logout()");
-    
-    Meteor.call('playerMethods_logout', playerId, token, function(error,result){
-        
-        console.log("client::logout::result() - " + error + ", " + result);
-        if(!error || error === undefined){
-            Delegates.Route.on_playerMethods_logout(result);
-        }
-        else{
-            console.log("fail");
-            Router.go('/register');
-        }
-    });
+Router.route('/leaderboard', function(){
+    this.render("leaderboard");
 });
 
- Router.route('/:username',function(){
-     console.log("registerMe::submit form(" + this.params.username + ")");
-     var userName = this.params.username;
-     Meteor.call("playerMethods_createPlayer", userName, function(error, results){
-        if(!error || error === undefined){
-            console.log("playerMethods_createPlayer::result() " + results);
-            if(results.status === HTTPStatusCodes.OK){
-               // redirect to players page
-               Router.go('/player/' + userName);
-            }
-            else{
-                console.log("Error creating Player:" + userName);
-                console.log(results);
-            }
-        }
-        else{
-            console.log("playerMethods_createPlayer::error() " + error);
-        }
-     });
- });
-
+Router.route('/profile', function(){
+    console.log("profile!");
+    this.render("myProfile");
+});
 // Variable based routes
 Router.route('/game/:gameId/waitForPlayers', function(){
     console.log("Router.route(/game/" + this.params.gameId + "/waitForPlayers)");
@@ -237,14 +206,6 @@ Router.route('game/:gameId/results', function(){
     }
 });
 
-Router.route('/leaderboard', function(){
-    this.render("leaderboard");
-});
-
-Router.route('/profile', function(){
-    console.log("profile!");
-    this.render("myProfile");
-});
 Router.route('/profiles/:userId', function(){
     
     var playerId    = Session.get(SessionKeys.PLAYER_ID);
@@ -318,5 +279,44 @@ Router.route('/game/:gameId/:move', function(){
         }
     );
 });
+
+Router.route('/logout',function(){
+    var playerId = Session.get(SessionKeys.PLAYER_ID);
+    var token = Session.get(SessionKeys.TOKEN);
+    console.log("client::logout()");
+    
+    Meteor.call('playerMethods_logout', playerId, token, function(error,result){
+        
+        console.log("client::logout::result() - " + error + ", " + result);
+        if(!error || error === undefined){
+            Delegates.Route.on_playerMethods_logout(result);
+        }
+        else{
+            console.log("fail");
+            Router.go('/register');
+        }
+    });
+});
+
+ Router.route('/:username',function(){
+     console.log("registerMe::submit form(" + this.params.username + ")");
+     var userName = this.params.username;
+     Meteor.call("playerMethods_createPlayer", userName, function(error, results){
+        if(!error || error === undefined){
+            console.log("playerMethods_createPlayer::result() " + results);
+            if(results.status === HTTPStatusCodes.OK){
+               // redirect to players page
+               Router.go('/player/' + userName);
+            }
+            else{
+                console.log("Error creating Player:" + userName);
+                console.log(results);
+            }
+        }
+        else{
+            console.log("playerMethods_createPlayer::error() " + error);
+        }
+     });
+ });
 
 console.log("Routes setup!");
