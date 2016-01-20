@@ -203,9 +203,9 @@ Router.route('/game/:gameId', function(){
 
 Router.route('game/:gameId/results', function(){
     
-    game = Db.GameDB.findGame(this.params.gameId);
+    this.game = Db.GameDB.findGame(this.params.gameId);
     
-    if(game != null){
+    if(this.game != null){
         this.render("myGameResults");
         
         // clear any game session keys
@@ -274,14 +274,19 @@ Router.route('/game/:gameId/:move', function(){
             if(!error || error === undefined){
                 console.log("Route:/game/" + gameId + "/" + move + " result: " + result);
                 
-                if(result.winnerId != null && result.winnerId !== undefined){
-                   Client.stopMoveWait();
-
-                   Router.go('/game/' + gameId + '/results'); 
+                if(result.gameEnded){
+                    Router.go('/game/' + gameId + '/results'); 
                 }
-                else{
-                    // once we've made our move, start the move wait again by going back to the game
-                    Router.go('/game/' + gameId);
+                else {
+                    if(result.winnerId != null && result.winnerId !== undefined){
+                       Client.stopMoveWait();
+    
+                       Router.go('/game/' + gameId + '/results'); 
+                    }
+                    else{
+                        // once we've made our move, start the move wait again by going back to the game
+                        Router.go('/game/' + gameId);
+                    }
                 }
             }
             else

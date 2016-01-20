@@ -281,10 +281,10 @@
     <div class="base-layout full-width full-height noselect">
         <h1>Playing Game: {{gameName}}</h1>
         <div align="center">
-            <table cellspacing="0" cellpadding="10" style="border:solid 1px black;width:80%" >
-               <tr><th class="border-blk" >Their Move</th><th class="blue-background">Player {{opponentPlayer}}</th></tr>
-               <tr class="no-inset" style="width:50%;height:50%;">
-                   <td class="no-inset border-blk">
+            <table cellspacing="0" cellpadding="10" style="height:100%;width:80%" >
+               <tr><th class="border-blk" >{{playerName}}</th><th class="border-blk blue-background">Player {{opponentPlayer}}</th></tr>
+               <tr class="no-inset">
+                   <td class="no-inset border-blk" style="width:50%;"  align="center">
                        <div class="inset-big fadeIn" style="height:140px;">
                           <div style="height:30px"><br/></div>
                           <div style="text-align:center;opacity:.44;">
@@ -292,38 +292,23 @@
                                <img src="/img/paper-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
                                <img src="/img/scissors-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
                           </div>
-                          <div style="text-align:center;height:20px;opacity:.3">
-                              <p>Waiting for {{opponentPlayer}} to make a move.</p>
-                          </div>
+                          <p>Waiting for {{opponentPlayer}} to make a move.</p>
                        </div>
                    </td>
                    <td class="full-height no-inset border-blk" style="width:50%;" align="center">
-                   <div class="inset-big" style="height:140px;">
-                          <div style="height:30px"><br/></div>
-                          <div style="text-align:center;opacity:.44;">
-                               <img src="/img/rock-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                               <img src="/img/paper-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                               <img src="/img/scissors-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                          </div>
-                       </div>
-                       <p>{{opponentPlayer}} is making their move...</p>
+                        <div class="inset-big" style="height:140px;">
+	                        <div style="height:30px"><br/></div>
+	                        <div style="text-align:center;opacity:.44;">
+	                             <img src="/img/rock-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	                             <img src="/img/paper-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	                             <img src="/img/scissors-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	                        </div>
+	                       <p>{{opponentPlayer}} is making their move...</p>
+                        </div>
                    </td>
                </tr>
-               <tr><td colspan="2"><div style="hbox no-inset"><a  href="{{pathFor route='logout'}}"><img src="/img/close-icon.png" style="panel"/> Quit</a></div></td></tr>
+               <tr><td class="border-blk" colspan="2"><div style="hbox no-inset"><a  href="{{pathFor route='logout'}}"><img src="/img/close-icon.png" style="panel"/> Quit</a></div></td></tr>
             </table>
-        </div>
-        <div class="hbox full-width full-height">
-            <br/>
-            <div class="panel">
-            <br/>
-            </div>
-            
-            <div class="panel shadow-box">
-                
-            </div> 
-            <div class="panel">
-            <br/>
-            </div>
         </div>
     </div>
 </template>
@@ -333,8 +318,8 @@
     <div class="base-layout full-width full-height noselect">
         <h1>Playing Game: {{gameName}}</h1>
         <div align="center">
-            <table cellspacing="0" cellpadding="10" style="border:solid 1px black;width:80%" >
-                <tr><th class="green-background border-blk" >{{playerName}}</th><th>{{opponentPlayer}}</th></tr>
+            <table cellspacing="0" cellpadding="10" style="width:80%" >
+                <tr><th class="green-background border-blk" >{{playerName}}</th><th  class="border-blk" >{{opponentPlayer}}</th></tr>
                 <tr class="no-inset" style="width:50%;height:50%;">
                    <td class="no-inset border-blk">
                        <div class="inset-big  fadeIn" style="height:140px;">
@@ -361,21 +346,8 @@
                        <p>{{opponentPlayer}} is awaiting your move...</p>
                    </td>
                </tr>
-               <tr><td colspan="2"><div style="hbox no-inset"><a  href="{{pathFor route='logout'}}"><img src="/img/close-icon.png" style="panel"/> Quit</a></div></td></tr>
+               <tr><td class="border-blk" colspan="2"><div style="hbox no-inset"><a  href="{{pathFor route='logout'}}"><img src="/img/close-icon.png" style="panel"/> Quit</a></div></td></tr>
             </table>
-        </div>
-        <div class="hbox full-width full-height">
-            <br/>
-            <div class="panel">
-            <br/>
-            </div>
-            
-            <div class="panel shadow-box">
-                
-            </div> 
-            <div class="panel">
-            <br/>
-            </div>
         </div>
     </div>
 </template>
@@ -383,16 +355,36 @@
 <!-- Game Results Template -->
 <template name="myGameResults">
     {{> navigation}}
-    <div class="base-layout">
-        <h1>Game: {{gameName}}</h1>
-        <h2>Results!</h2>
-        <p class="winner">Winner: {{winner}}</p>
-        <p class="winner">Winning Move: {{winningMove}}</p>
-        <p class="loser">Loser: {{loser}}</p>
-        <p class="loser">Winning Move: {{losingMove}}</p>
-        <form>
-            <input type="submit" value="Back to lobby"/>
-        </form>
+    <div class="base-layout full-width full-height noselect">
+        <h1>Game Results: {{gameName}}</h1>
+        <div align="center">
+            <table cellspacing="0" cellpadding="10" style="border:solid 1px black;width:80%" >
+                <tr><th class="border-blk">{{playerName}}</th><th class="border-blk">{{opponentPlayer}}</th></tr>
+                <tr class="no-inset" style="width:50%;height:50%;">
+                   <td class="no-inset border-blk">
+                       <div class="inset-big  fadeIn" style="height:140px;">
+                          <div style="height:30px"><br/></div>
+                          <div style="text-align:center;">
+                          </div>
+                       </div>
+                   </td>
+                   <td class="full-height no-inset border-blk" style="width:50%;" align="center">
+                   <div class="inset-big" style="height:140px;">
+                          <div style="height:30px"><br/></div>
+                          <div style="text-align:center;opacity:.44;">
+                          </div>
+                       </div>
+                   </td>
+                </tr>
+                <tr>
+                <td colspan="2">
+	                <div class="full-width" align="center">
+	                   <form><input type="submit" value="Back to lobby"/></form>
+	                </div>
+                </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </template>
 

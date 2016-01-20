@@ -79,18 +79,16 @@ if(Meteor.isServer){
                 if(player){
                     if(Db.HeartbeatDB.isPlayerOnline(playerId)){
                         if(player.in_game){
-                            //return this.playerMethods_leaveGame(player.game_id);
-                            
-                            return {status:HTTPStatusCodes.INTERNAL_ERROR, errorCode:GameErrorCodes.GAME_NOT_COMPLETE }
+                            Db.GameDB.leaveGame(player.game_id, playerId, playerToken);
                         }
                         
                         if(Db.Auth.isPlayerTokenValid(playerId, playerToken, false)){
-
                             // clear this so its guaranteed to be 'expired' upon next
                             //check
                             Db.Collections.Heartbeat.update({_id:hb._id}, {$set:{player_token:"", time:0}});
-                            return {status:HTTPStatusCodes.OK, token:playerToken }
                         }
+                        
+                        return {status:HTTPStatusCodes.OK, token:playerToken }
                     }
                     return {status:HTTPStatusCodes.NOT_AUTHORIZED };
                 }
@@ -208,7 +206,7 @@ if(Meteor.isServer){
                 result = Db.GameDB.submitMove(game, playerId, move, playerToken);
             }
             else{
-                result = {status:HTTPStatusCodes.INTERNAL_ERROR}
+                result = {gameEnded:true,status:HTTPStatusCodes.INTERNAL_ERROR}
             }
             
             return result;

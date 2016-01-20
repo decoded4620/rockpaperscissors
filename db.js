@@ -429,8 +429,8 @@ Db = {
                 
                 // ifs are nested (rather than and'ed) to allow individual errors to be returned
                 // for failure cases.
-                if(player != null){
-                    if(game != null){
+                if(player != null && player !== undefined){
+                    if(game != null && game !== undefined){
                         console.log("Db.GameDB.joinGame - player and game are valid, playergame: " + player.game_id + ", game: " + game._id);
                         // if a new game or rejoin
                         if(player.game_id != null && player.game_id !==undefined && player.game_id !== game._id){
@@ -525,12 +525,22 @@ Db = {
             console.log("Db.GameDB.leaveGame: " + gameId + ", " + playerId + ",  " + playerToken);
             // leave a game
             if(Db.Auth.isPlayerTokenValid(playerId, playerToken, false)){
-                game = this.findGame(gameId);
-                player = Db.PlayerDB.findPlayer(playerId);
                 
-             // ifs are nested (rather than and'ed) to allow individual errors to be returned
+                // ifs are nested (rather than and'ed) to allow individual errors to be returned
                 // for failure cases.
+                player = Db.PlayerDB.findPlayer(playerId);
                 if(player != null){
+                    if(gameId == null || gameId === undefined){
+                        if(player.game_id != null && player.game_id !== undefined){
+                            gameId = player.gameId;
+                        }
+                        else {
+                            console.log("leave game did nothing...");
+                            return {status:HTTPStatusCodes.NOT_FOUND}; 
+                        }
+                    }
+                    game = this.findGame(gameId);
+                
                     if(game != null){
                         console.log("Db.GameDB.leaveGame - player and game are valid, playergame: " + player.game_id + ", game: " + game._id);
                         // if a new game or rejoin
@@ -562,9 +572,17 @@ Db = {
                                             console.log("game is toast");
                                         }
                                     }
-                                    console.log("Db.GameDB.leaveGame - you've forfeited the game!");
-                                    game.scores[playerId] = 0;
+                                    console.log("Db.GameDB.leaveGame - you've forfeited the game, remaining players: "+ game.player_ids.join(","));
                                     
+                                    game.scores[playerId] = 0;
+                                    if(game.player_ids.length < 2){
+                                        if(game.player_ids.length > 0){
+                                            game.winner_id = game.player_ids[0];
+                                        }
+                                        // if no more players are available
+                                        // but one (or none) the game is complete
+                                        Db.GameDB.endGame(game);
+                                    }
                                 }
 
                                 if(!Db.GameDB.saveGame(game)){
@@ -633,7 +651,7 @@ Db = {
             
             if(!game){
                 // LOGOUT
-                return {status:HTTPStatusCodes.INTERNAL_ERROR};
+                return {gameEnded:true,status:HTTPStatusCodes.OK};
             }
             
             if(!playerId || !playerToken || !value){
@@ -645,7 +663,7 @@ Db = {
                 
                 if(game && game.status == Db.Constants.GameStatus.IN_PROGRESS){
                     
-                    var moveData = {num:game.moves.length+1, playerId:playerId, move:value, rec:false, isWin:true};
+                    var moveData = {num:game.moves.length+1, playerId:playerId, move:value, rec:false, isWin:false};
                     game.moves[game.moves.length] = moveData;
                     
                     // every time a move happens check to see if a score has been created for a specific player
@@ -675,10 +693,12 @@ Db = {
                                     // was the winner
                                     if(compareValue == 1){
                                         losersFound = true;
+                                        move1.isWin = true;
                                         movesCopy.splice(movesCopy.indexOf(move2),1);
                                     }
                                     else{
                                         losersFound = true;
+                                        move2.isWin = true;
                                         movesCopy.splice(movesCopy.indexOf(move1),1);
                                     }
                                 }
@@ -771,7 +791,8 @@ Db = {
                 }
                 else{
                     console.log("Db.GameDB.move - Game is no longer running");
-                    return {status:HTTPStatusCodes.INTERNAL_ERROR, msg:"game not running!"};
+                    Db.GameDB.leaveGame(game.id, playerId, playerToken);
+                    return {gameEnded:true, status:HTTPStatusCodes.OK, gameStatus: Db.Constants.GameStatus.COMPLETE};
                 }
             }
             else{

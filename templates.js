@@ -309,18 +309,6 @@ if (Meteor.isClient) {
     });
     
     Template.myGameResults.helpers({
-       gameName:function(){
-           return Session.get(SessionKeys.CURRENT_GAME_NAME);
-       },
-       losers:function(){
-           console.log("getLosers()");
-           console.log(this);
-           
-           return [{lname:"Bobby", lscore:69}];
-       }
-    });
-    
-    Template.myGameResults.helpers({
         results:function(){
             console.log("results:");
             console.log(game.results);
