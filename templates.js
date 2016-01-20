@@ -192,7 +192,7 @@ if (Meteor.isClient) {
                 console.log(gip);
                 // SANITY check in case someone joined while we fetched.
                 if(gip[i].status == Db.Constants.GameStatus.WAITING_FOR_PLAYERS){
-                    
+                   
                     console.log("Found a game!");
                     // stop checking
 //                    Meteor.clearInterval(autoJoinInterval)
@@ -346,11 +346,116 @@ if (Meteor.isClient) {
         }
     });
     
+    Template.playerMove.helpers({
+        moveImage:function(){
+            console.log("Template.playerMove.helpers.moveImage");
+            console.log(this.move);
+            if(this.move === 'r'){
+                return "rock-icon-large.png";
+            }
+            else if(this.move=== 'p'){
+                return "paper-icon-large.png";
+            }
+            else if(this.move === 's'){
+                return "scissors-icon-large.png";
+            }
+            
+            return "";
+        }
+    });
+    
     Template.myGameResults.helpers({
+        opponentPlayer(){
+            var results;
+            var game = Db.GameDB.findGame(Session.get(SessionKeys.CURRENT_GAME_ID));
+            
+            
+            if(game != null){
+                
+                if(game.status == Db.Constants.GameStatus.COMPLETE){
+                    console.log("Template.myGameResults.results");
+                    results = game.results;
+                }
+                else{
+                    console.log("Game Status is: " + Db.Constants.GameStatus.getStatusLabel(game.status));
+                }
+            }
+            
+            if(results){
+                for(var i = 0; i < results.moves.length; ++i){
+                    if(results.moves[i].playerId !== Session.get(SessionKeys.PLAYER_ID)){
+                        return results.moves[i].playerId;
+                    }
+                }
+            }
+        },
+        myMove(){
+            var results;
+            var game = Db.GameDB.findGame(Session.get(SessionKeys.CURRENT_GAME_ID));
+            
+            
+            if(game != null){
+                
+                if(game.status == Db.Constants.GameStatus.COMPLETE){
+                    console.log("Template.myGameResults.results");
+                    results = game.results;
+                }
+                else{
+                    console.log("Game Status is: " + Db.Constants.GameStatus.getStatusLabel(game.status));
+                }
+            }
+            
+            if(results){
+                for(var i = 0; i < results.moves.length; ++i){
+                    if(results.moves[i].playerId === Session.get(SessionKeys.PLAYER_ID)){
+                        var move = results.moves[i].move;
+                        console.log("Move is: " + move);
+                        return {move:move};;
+                    }
+                }
+            }
+        },
+        theirMove(){
+            var results;
+            var game = Db.GameDB.findGame(Session.get(SessionKeys.CURRENT_GAME_ID));
+            
+            if(game != null){
+                
+                if(game.status == Db.Constants.GameStatus.COMPLETE){
+                    console.log("Template.myGameResults.results");
+                    results = game.results;
+                }
+                else{
+                    console.log("Game Status is: " + Db.Constants.GameStatus.getStatusLabel(game.status));
+                }
+            }
+            
+            if(results){
+                for(var i = 0; i < results.moves.length; ++i){
+                    if(results.moves[i].playerId !== Session.get(SessionKeys.PLAYER_ID)){
+                        var move = results.moves[i].move;
+                        console.log("Move is: " + move);
+                        return {move:move};
+                    }
+                }
+            }
+        },
+        myGame:function(){
+            console.log("Template.myGameResults.helpers.myGame");
+            return Db.GameDB.findGame(Session.get(SessionKeys.CURRENT_GAME_ID));
+        },
+        didIWin:function(){
+            var game = Db.GameDB.findGame(Session.get(SessionKeys.CURRENT_GAME_ID));
+            console.log("Template.myGameResults.helpers.didIWin");
+            return game.winner_id === Session.get(SessionKeys.PLAYER_ID);
+        },
+        playerName(){
+            console.log("Template.myGameResults.helpers.playerName");
+            return Session.get(SessionKeys.PLAYER_ID);
+        },
         results:function(){
-            console.log("results:");
-            console.log(game.results);
-            return game.results;
+                
+            return {};
         }
     });
     Template.myGameResults.events({ 
@@ -358,6 +463,10 @@ if (Meteor.isClient) {
             console.log("back to default room: " + Db.RoomDB.DEFAULT_ROOM_ID);
             event.preventDefault();
             console.log(event);
+            
+            // clear any game session keys
+            Client.clearSessionKeys([SessionKeys.CURRENT_GAME_NAME, SessionKeys.CURRENT_GAME_ID, SessionKeys.WAIT_FOR_GAME_ID, SessionKeys.CURRENT_TURN_PLAYER]);
+            
             switch(event.currentTarget.id){
                 case 'playAgain':
                     Router.go('/rooms/' + Db.RoomDB.DEFAULT_ROOM_ID);
@@ -369,7 +478,11 @@ if (Meteor.isClient) {
                      break;
             }
         }
-    })
+    });
+    Template.myGameResults.rendered = function(){
+        // restart the hb.
+        Client.restartHeartbeat(10000);
+    }
   
     Template.gameAbandoned.helpers(gameHelpers);
     Template.gameComplete.helpers(gameHelpers);

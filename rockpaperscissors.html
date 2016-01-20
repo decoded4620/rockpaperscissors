@@ -129,7 +129,7 @@
         {{#each links}}
             {{>navlink}}
         {{/each}}
-	    <p><i>Welcome, {{playerName}}, you last logged in on {{lastLogin}}</i></p>
+	    <p><i>You last logged in on {{lastLogin}}</i></p>
     </div>
 </template>
 
@@ -356,27 +356,40 @@
     </div>
 </template>
 
+<template name="playerMove">
+    <img src ="/img/{{moveImage}}"/>
+</template>
 <!-- Game Results Template -->
 <template name="myGameResults">
     {{> navigation}}
     <div class="base-layout full-width full-height noselect">
-        <h1>Game Results: {{gameName}}</h1>
+        <h1>Game Results: {{myGame.game_name}}</h1>
         <div align="center">
             <table cellspacing="0" cellpadding="10" style="border:solid 1px black;width:80%" >
-                <tr><th class="border-blk">{{playerName}}</th><th class="border-blk">{{opponentPlayer}}</th></tr>
-                <tr class="no-inset" style="width:50%;height:50%;">
+                {{#if didIWin}}
+                <tr><th class="border-blk green-background">WINNER: {{playerName}}</th><th class="orange-background border-blk">LOSER: {{opponentPlayer}}</th></tr>
+                {{else}}
+                <tr><th class="border-blk orange-background">LOSER: {{playerName}}</th><th class="green-background border-blk">WINNER: {{opponentPlayer}}</th></tr>
+                {{/if}}
+                <tr class="no-inset" >
                    <td class="no-inset border-blk">
-                       <div class="inset-big  fadeIn" style="height:140px;">
+                       <div class="inset-big  fadeIn" style="height:200px;">
                           <div style="height:30px"><br/></div>
                           <div style="text-align:center;">
+                          {{#with myMove}}
+                                {{>playerMove}}
+                          {{/with}}
                           </div>
                        </div>
                    </td>
-                   <td class="full-height no-inset border-blk" style="width:50%;" align="center">
-                   <div class="inset-big" style="height:140px;">
+                   <td class="no-inset border-blk">
+                       <div class="inset-big  fadeIn" style="height:200px;">
                           <div style="height:30px"><br/></div>
-                          <div style="text-align:center;opacity:.44;">
-                          </div>
+                          <div style="text-align:center;">
+                          {{#with theirMove}}
+                                {{>playerMove}}
+                          {{/with}}
+                          </div> 
                        </div>
                    </td>
                 </tr>

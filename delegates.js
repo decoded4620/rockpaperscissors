@@ -99,8 +99,10 @@ if(Meteor.isClient){
                             // stop waiting for the move and go to 'my turn'
                             Client.stopMoveWait();
                             if(Db.GameDB.isComplete(game)){
+                                // if this happens, it means that something bad happenend. not likely.
                                 // clear any game session keys
                                 Client.clearSessionKeys([SessionKeys.CURRENT_GAME_NAME, SessionKeys.CURRENT_GAME_ID, SessionKeys.WAIT_FOR_GAME_ID, SessionKeys.CURRENT_TURN_PLAYER])
+                                Router.go('/lobby');
                             }
                             else{
                                 // reload game screen for our move

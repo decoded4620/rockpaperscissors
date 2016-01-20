@@ -790,11 +790,11 @@ Db = {
                         
                         //winner!
                         if(winnerId != null && winnerId !== undefined){
-                            result      = {status:HTTPStatusCodes.OK, winnerId:winnerId, gameIsTie:false, winningScore:null, players:game.player_ids};
+                            result      = {status:HTTPStatusCodes.OK, winnerId:winnerId, gameIsTie:false, round:game.rounds[0], moves:game.moves, players:game.player_ids};
                         }
                         //tie
                         else{
-                            result      = {status:HTTPStatusCodes.OK, winnerId:null, gameIsTie:true, winningScore:game.scores[winnerId], players:game.player_ids};
+                            result      = {status:HTTPStatusCodes.OK, winnerId:null, gameIsTie:true, round:game.rounds[0], moves:game.moves, players:game.player_ids};
                         }
                         
                         // set the final values
