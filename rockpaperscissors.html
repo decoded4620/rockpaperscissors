@@ -7,85 +7,68 @@
 <template name="lobby">
     {{> navigation}}
     <div class=" base-layout">
-	    <h1>Game Room: {{roomName}}</h1>
-	    <p><i>Welcome, {{playerName}}, you last logged in on {{lastLogin}}</i></p>
-	    <div class="container">
-	        <div class="create-game-form-container">
-		        <h2>Create A New Game</h2>
-		        <p><i>Simply type the name below and click 'Create a game'. You'll be redirected to the game lobby until players join.</i></p>
-		        <form class="game-form">
-		            <div  class="create-game-text-input" >
-		              Name your game: <input class="create-game-input-base" type="text"  name="gameName" value="Game Name (eg. {{playerName}}'s Game)"/>
-		            </div>
-		            <div  class="create-game-num-input" >
-		              # Players: <input class="create-game-input-base" type="text"  name="minPlayers" value="2"/>
-		            </div>
-		            <div class="create-game-num-input">
-			            Best out of: <input class="create-game-input-base" type="text"  name="maxTurns" value="3"/>
-		            </div>
-		            <div class="create-game-input-container">
-				       <br/><input class="create-game-input" type="submit" name="submit" value="PLAY NOW&nbsp;&gt;&gt;&nbsp;"/>
-		            </div>
-		        </form> 
-	        </div>
-	        <div class="fadeIn games-completed-list">
-	            {{#if hasGamesInProgress}}
-	            <div class="shadow-box">
-			        <h2 class="green-background">Games Currently In Progress / Waiting for Players</h2>
-		            <div class="scrolling-div green-background">
-				        <ul>
-				        {{#each gamesInProgress}}
-				            {{> game}}
-				        {{/each}}
-			            </ul>
-		            </div>
-	            </div>
-	            {{else}}
-	            <div class="shadow-box dark-background light-text">
-	               <p><i>There are no games currently in progress. Please create one!</i></p>
-	            </div>
-	            {{/if}}
-	            {{#if hasCompletedGames}}
-	            <br/>
-                <br/>
-                <div class="shadow-box">
-	            <h2 class="dark-background">Last Few Completed Games</h2>
-		            <div class="scrolling-div blue-background">
-			            <ul>
-			            {{#each gamesCompleted}}
-			                {{> gameComplete}}
-			            {{/each}}
-			            </ul>
-		            </div>
-	            </div>
-	            {{else}}
-	            <div class="shadow-box dark-background light-text">
-                   <p><i>There are no completed games. Please play one!</i></p>
+        <h1>Game Room: {{roomName}}</h1>
+        <p><i>Welcome, {{playerName}}, you last logged in on {{lastLogin}}</i></p>
+        <div class="container">
+           <!--  Create form -->
+            <div class="create-game-form-container inset-big">
+                <h2>Create A New Game</h2>
+                <p><i>Simply type the name below and click 'Create a game'. You'll be redirected to the game lobby until players join.</i></p>
+                <form class="game-form">
+                    <div  class="create-game-text-input" >
+                      Name your game: <input class="create-game-input-base" type="text"  name="gameName" value="Game Name (eg. {{playerName}}'s Game)"/>
+                    </div>
+                    <!-- 
+                    <div  class="create-game-num-input" >
+                      # Players: <input class="create-game-input-base" type="text"  name="minPlayers" value="2"/>
+                    </div>
+                    <div class="create-game-num-input">
+                        Best out of: <input class="create-game-input-base" type="text"  name="maxTurns" value="1"/>
+                    </div>
+                     -->
+                    <div class="create-game-input-container">
+                       <br/><input class="create-game-input" type="submit" name="submit" value="PLAY NOW&nbsp;&gt;&gt;&nbsp;"/>
+                    </div>
+                </form> 
+            </div>
+            <div class="fadeIn games-container">
+                {{#if hasGamesInProgress}}
+                <p>Games in progress</p>
+                <div class="shadow-box auto-width">
+                    <div class="scrolling-div full-width no-inset">
+                    {{#each gamesInProgress}}
+                        {{> game}}
+                    {{/each}}
+                    </div>
+                </div>
+                {{else}}
+                <div class="shadow-box dark-background light-text">
+                   <p><i>There are no games currently in progress. Please create one!</i></p>
                 </div>
                 {{/if}}
-	            {{#if hasAbandonedGames}}
-	            <br/>
-	            <br/>
-	            <div class="shadow-box">
-		            <h2 class="orange-background">Recently Abandoned Games</h2>
-	                   <div class="scrolling-div orange-background">
-		                <ul>
-		                {{#each gamesAbandoned}}
-		                    {{> gameAbandoned}}
-		                {{/each}}
-		                </ul>
-	                   </div>
-	                 <br/>
-	                 <br/>
-	            </div>
-	            {{else}}
+                
+                {{#if hasAbandonedGames}}
+                <br/>
+                <br/>
+                <div class="shadow-box">
+                       <div class="scrolling-div orange-background">
+                        <ul>
+                        {{#each gamesAbandoned}}
+                            {{> gameAbandoned}}
+                        {{/each}}
+                        </ul>
+                       </div>
+                     <br/>
+                     <br/>
+                </div>
+                {{else}}
                 <div class="shadow-box dark-background light-text">
                    <p><i>There are no abandoned games. Server is healthy!</i></p>
                 </div>
                 {{/if}}
                 
-	        </div>
-	    </div>
+            </div>
+        </div>
     </div>
 
 </template>
@@ -95,20 +78,37 @@
  {{> navigation}}
  <h2>Leaderboard</h2>
  <div class="container">
-	 <div class="fadeIn games-completed-list">
-	    <div class="shadow-box">
-		 <div class="scrolling-div full-width full-height">
-		       <table>
-		       <tr><th>Player</th><th>Win/Loss</th><th>Rating (Elo)</th><th>Last Seen</th></tr>
-			   {{#each leaderboardPlayers}}
-			       {{> leaderboardPlayer}}
-			   {{/each}}
-		       </table>
-		   </div>
-		</div>
-	 </div>
-	 </div>
+     <div class="fadeIn games-completed-list">
+        <div class="shadow-box">
+         <div class="scrolling-div full-width" style="height:300px;">
+               <table>
+               <tr><th>Player</th><th>Win/Loss</th><th>Rating (Elo)</th><th>Last Seen</th></tr>
+               {{#each leaderboardPlayers}}
+                   {{> leaderboardPlayer}}
+               {{/each}}
+               </table>
+           </div>
+        </div>
+     </div>
+     </div>
  </div>
+ {{#if hasCompletedGames}}
+    <br/>
+    <h3>Completed games</h3>
+    <div class="shadow-box">
+        <div class="scrolling-div" style="height:400px;">
+            <ul>
+            {{#each gamesCompleted}}
+                {{> gameComplete}}
+            {{/each}}
+            </ul>
+        </div>
+    </div>
+    {{else}}
+    <div class="shadow-box dark-background light-text">
+       <p><i>There are no completed games. Please play one!</i></p>
+    </div>
+    {{/if}}
 </template>
 <template name="leaderboardPlayer">
     <tr><td><a href="/profiles/{{this._id}}">{{this._id}}</a></td><td><span class="win-loss"><b>[{{this.rounds_won}} / {{this.rounds_lost}}]</b></span></td><td>{{this.elo}}</td><td>{{lastLoginDate}}</td></tr>
@@ -128,6 +128,7 @@
         {{/each}}
     </div>
 </template>
+
 <template name="navlink">
     <a href="{{href}}">{{name}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;
 </template>
@@ -137,84 +138,62 @@
 <template name="registerMe">
     <div class="fadeInNoDelay full-width full-height background-image" style="text-align:center;" >
        <div style="height:45px;"><br/></div>
-	    <div class="full-width full-height">
-		    <div style="height:68%;"><br/></div>
-		    <div class="login-container">
-		        <div class="login-panel"><br/></div>
-		        <div class="login-panel"><br/></div>
-		        <div class="login-panel">
-				    <form class="fadeInLongDelay login" style="padding-top:0;padding:2px;border:solid 1px #266c8e;">
-				        <div class="full-width blue-background light-text" style="height:20px;text-align:center;padding-top:4px;padding-bottom:4px;"> Login Here </div>
-				        User Name:<input  style="height:22px;" type="text" name="playerName" value="Name (eg. player1)"/>
-				        Password:<input  style="height:22px;" type="password" name="password" value="" secure="true"/>
-				        <div class="full-height"><br/></div>
-				        <input class="login green-background light-text shadow-glow" style="border:solid 2px #a2FFa2;" type="submit" value="Play RoShamBo Now!"/>
-				    </form>
-		        </div>
-			    <div class="login-panel"><br/></div>
-			    <div class="login-panel"><br/></div>
-		    </div>
-	    </div>
+        <div class="full-width full-height">
+            <div style="height:68%;"><br/></div>
+            <div class="login-container">
+                <div class="login-panel"><br/></div>
+                <div class="login-panel"><br/></div>
+                <div class="login-panel">
+                    <form class="fadeInLongDelay login" style="padding-top:0;padding:2px;border:solid 1px #266c8e;">
+                        <div class="full-width blue-background light-text" style="height:20px;text-align:center;padding-top:4px;padding-bottom:4px;"> Login Here </div>
+                        User Name:<input  style="height:22px;" type="text" name="playerName" value="Name (eg. player1)"/>
+                        Password:<input  style="height:22px;" type="password" name="password" value="" secure="true"/>
+                        <div class="full-height"><br/></div>
+                        <input class="login green-background light-text shadow-glow" style="border:solid 2px #a2FFa2;" type="submit" value="Play RoShamBo Now!"/>
+                    </form>
+                </div>
+                <div class="login-panel"><br/></div>
+                <div class="login-panel"><br/></div>
+            </div>
+        </div>
     </div>
 </template>
 
 <template name="game">
-    <div class="game-container base-layout">
-	    <div class="game-info">
-	        <p>Game <b>{{gameName}}</b>&nbsp;&nbsp;&nbsp;&nbsp;[Owner: <b>{{ownerName}}</b>]    
-	        {{#if waitingForPlayers}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button>Join Game [{{gameName}}]</button>{{/if}}</p>
-	    </div>
-        <div class ="fit-to-content">
-            <div class="game-status">
-                 Status: <b>{{gameStatusLabel}}</b>
-            </div> 
-            <div class="full-width" style="padding-left:5px;">
-	            <b>Roster</b><br/>
-	             <ol>
-	              {{#each players}}
-	              <li>
-	                  <div class="player-container">
-	                      <div class="player-info"><a href="/profiles/{{this._id}}">{{this._id}}</a></div>
-	                  </div>
-	              </li>
-	              {{/each}}
-	            </ol>
-            </div>
-        </div>
-        <div class ="game-container">
-                <div class="player-container">
-                   <h3 class="green-background">Results</h3>
-                    <table class="player-container">
-                        <tr><th>Round</th><th>Winner</th><th>Loser</th><th>Winning Move</th></tr>
-                         {{#each gameRounds}}
-                              {{ >gameRound}}
-                         {{/each}}
-                    </table> 
-                </div>
-            </div>
-     </div>
+
+<table cellpadding="2px" cellspacing="0" class="full-width no-inset">
+  <tr class="columns-3"><th align="left">{{gameName}}</th><th></th><th class="green-background"></th></tr>
+  <tr>
+    <td><b>Game </b><span> is {{gameStatusLabel}}</span> </td>
+    <td style="width:240px;">Owner: <b>{{ownerName}}</b></td>
+{{#if waitingForPlayers}}
+    <td align="center" class="green-background" style="width:120px;"><button style="margin-bottom:15px;">Join Game</button></td>
+{{else}}
+    <td align="center" class="green-background" style="width:120px;">Game is full.</td>
+{{/if}}
+  </tr>
+</table>
 </template>
 
 <template name="gameComplete">
     <div class="game-container base-layout">
             <div class="game-info-complete">
-                <h2 class="dark-background muted-text"><span class="orange-text"><b>{{gameName}}</b></span>&nbsp;&nbsp;&nbsp;Owner: <b>{{ownerName}}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="green-text">Winner: {{winner_id}}</span></h2>
+                <h2 class="dark-background muted-text">Game: <span class="orange-text"><b>{{gameName}}</b></span>&nbsp;&nbsp;&nbsp;Owner: <b>{{ownerName}}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="green-text">Winner: {{winner_id}}</span></h2>
             </div>
            <div class ="game-container">
                 <div class="player-info">
-	                <table class="player-container">
-		                <tr><th>Player</th><th>Win/Loss</th><th></th></tr>
-		                 {{#each players}}
-		                 <tr><td><a href="/profiles/{{this._id}}">{{this._id}}</a></td><td><span class="win-loss"><b>[{{this.rounds_won}} / {{this.rounds_lost}}]</b></span></td><td></td></tr>
-		                 {{/each}}
-	                </table> 
+                    <table class="player-container">
+                    <tr><th>Player</th><th>Win/Loss</th><th></th></tr>
+                         {{#each players}}
+                         <tr><td><a href="/profiles/{{this._id}}">{{this._id}}</a></td><td><span class="win-loss"><b>[{{this.rounds_won}} / {{this.rounds_lost}}]</b></span></td><td></td></tr>
+                         {{/each}}
+                    </table> 
                 </div>
            </div>
            <div class ="game-container">
                 <div class="player-container">
-                   <h3 class="green-background">Results</h3>
                     <table class="player-container">
-                        <tr><th>Round</th><th>Winners</th><th>Winning Move</th><th></th></tr>
+                        <tr ><th class="green-background">Round</th><th class="green-background">Winners</th><th class="green-background">Winning Move</th><th class="green-background"></th></tr>
                          {{#each gameRounds}}
                               {{ >gameRound}}
                          {{/each}}
@@ -223,6 +202,7 @@
             </div>
        </div>
 </template>
+
 <template name="gameRound">
    <tr><td>{{this.num}}</td><td>{{roundWinnerNames}}</td><td>{{winningMove}}</td></tr>
 </template>
@@ -230,7 +210,7 @@
 <template name="gameAbandoned">
 <div class="game-container base-layout">
             <div class="game-info-complete orange-background">
-                Game <b>{{gameName}}</b> [Owner: <b>{{ownerName}}</b>]
+                Abandoned Game: <b>{{gameName}}</b>  Owner: <b>{{ownerName}}</b>
             </div>
            <div class ="game-container">
                 <div class="player-container">
@@ -248,18 +228,18 @@
 </template>
 <template name="profileContainer">
     <div class="player-container">
-	    <div class="dark-background panel" style="padding-left:10px;padding-right:10px;">
-	    <p><b>{{this._id}}</b></p>
-	    </div>
-	    <div class="blue-background panel" style="padding-left:10px;padding-right:10px;">
-	    <p><b>Elo Score:</b> {{elo}}</p>
-	    </div>
-	    <div class="green-background panel" style="padding-left:10px;padding-right:10px;">
-	    <p><b>Games Won:</b> {{wins}}</p>
-	    </div>
-	    <div class="orange-background panel" style="padding-left:10px;padding-right:10px;">
-	    <p><b>Rounds Won:</b> {{rounds_won}}</p>
-	    </div>
+        <div class="dark-background panel" style="padding-left:10px;padding-right:10px;">
+        <p><b>{{this._id}}</b></p>
+        </div>
+        <div class="blue-background panel" style="padding-left:10px;padding-right:10px;">
+        <p><b>Elo Score:</b> {{elo}}</p>
+        </div>
+        <div class="green-background panel" style="padding-left:10px;padding-right:10px;">
+        <p><b>Games Won:</b> {{wins}}</p>
+        </div>
+        <div class="orange-background panel" style="padding-left:10px;padding-right:10px;">
+        <p><b>Rounds Won:</b> {{rounds_won}}</p>
+        </div>
     </div>
 </template>
 <template name="myProfile">
@@ -282,52 +262,121 @@
 </template>
 <template name="rejoinGame">
     <div class="base-layout">
-	     <h1>Game already in progress</h1>
-	     <button class="rejoin-game">Rejoin game</button>
-	     <button class="concede-game">Concede</button>
-	 </div>
+         <h1>Game already in progress</h1>
+         <button class="rejoin-game">Rejoin game</button>
+         <button class="concede-game">Concede</button>
+     </div>
 </template>
 
 <template name="waitingForPlayers">
     {{> navigation}}
     <div class="base-layout">
-	    <h1>Waiting for players to join</h1>
-	    <p>You'll be redirected to the game momentarily...</p>
+        <h1>Waiting for players to join</h1>
+        <p>You'll be redirected to the game momentarily...</p>
     </div>
 </template>
 
 <template name="inGameTheirTurn">
     {{> navigation}}
-    <div class="base-layout">
-	    <h1>Game: {{gameName}}</h1>
-	    <p>waiting for <span class="player-tag">{{opponent}}</span> to move</p>
+    <div class="base-layout full-width full-height noselect">
+        <h1>Playing Game: {{gameName}}</h1>
+        <div align="center">
+            <table cellspacing="0" cellpadding="10" style="border:solid 1px black;width:80%" >
+               <tr><th class="border-blk" >Their Move</th><th class="blue-background">Player {{opponentPlayer}}</th></tr>
+               <tr class="no-inset" style="width:50%;height:50%;">
+                   <td class="no-inset border-blk">
+                       <div class="inset-big fadeIn" style="height:140px;">
+                          <div style="height:30px"><br/></div>
+                          <div style="text-align:center;opacity:.44;">
+                               <img src="/img/rock-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                               <img src="/img/paper-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                               <img src="/img/scissors-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                          </div>
+                          <div style="text-align:center;height:20px;opacity:.3">
+                              <p>Waiting for {{opponentPlayer}} to make a move.</p>
+                          </div>
+                       </div>
+                   </td>
+                   <td class="full-height no-inset border-blk" style="width:50%;" align="center">
+                   <div class="inset-big" style="height:140px;">
+                          <div style="height:30px"><br/></div>
+                          <div style="text-align:center;opacity:.44;">
+                               <img src="/img/rock-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                               <img src="/img/paper-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                               <img src="/img/scissors-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                          </div>
+                       </div>
+                       <p>{{opponentPlayer}} is making their move...</p>
+                   </td>
+               </tr>
+               <tr><td colspan="2"><div style="hbox no-inset"><a  href="{{pathFor route='logout'}}"><img src="/img/close-icon.png" style="panel"/> Quit</a></div></td></tr>
+            </table>
+        </div>
+        <div class="hbox full-width full-height">
+            <br/>
+            <div class="panel">
+            <br/>
+            </div>
+            
+            <div class="panel shadow-box">
+                
+            </div> 
+            <div class="panel">
+            <br/>
+            </div>
+        </div>
     </div>
 </template>
 
 <template name="inGameMyTurn">
     {{> navigation}}
-    <div class="base-layout full-width full-height green-background">
-	    <h3>Playing Game: {{gameName}}</h3>
-	    <div class="center-content">
-	        <br/>
-	        <div class="panel">
-	        <br/>
-	        </div>
-	        
-	        <div class="panel shadow-box">
-		        <h4>Make your move</h4>
-				<form class="game-form">
-		            <input class="game-form-radio" type="radio" name="moveChoice"  value="r" checked/>Rock
-		            <input class="game-form-radio" type="radio" name="moveChoice"  value="p"/>Paper
-		            <input class="game-form-radio" type="radio" name="moveChoice"  value="s"/>Scissors
-		            <div style="height:30%;"><br/></div>
-		            <input type="submit" value="MOVE!"/>
-		        </form>
-	        </div> 
-	        <div class="panel">
-	        <br/>
-	        </div>
-	    </div>
+    <div class="base-layout full-width full-height noselect">
+        <h1>Playing Game: {{gameName}}</h1>
+        <div align="center">
+            <table cellspacing="0" cellpadding="10" style="border:solid 1px black;width:80%" >
+                <tr><th class="green-background border-blk" >{{playerName}}</th><th>{{opponentPlayer}}</th></tr>
+                <tr class="no-inset" style="width:50%;height:50%;">
+                   <td class="no-inset border-blk">
+                       <div class="inset-big  fadeIn" style="height:140px;">
+                          <div style="height:30px"><br/></div>
+                          <div style="text-align:center;">
+                              <a href="#"><img id="rock" src="/img/rock-icon.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <a href="#"><img id="paper" src="/img/paper-icon.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <a href="#"><img id="scissors" src="/img/scissors-icon.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          </div>
+                          <div style="text-align:center;height:20px;">
+                              <p>Select one to make a move</p>
+                          </div>
+                       </div>
+                   </td>
+                   <td class="full-height no-inset border-blk" style="width:50%;" align="center">
+                   <div class="inset-big" style="height:140px;">
+                          <div style="height:30px"><br/></div>
+                          <div style="text-align:center;opacity:.44;">
+                               <img src="/img/rock-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                               <img src="/img/paper-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                               <img src="/img/scissors-icon.png"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          </div>
+                       </div>
+                       <p>{{opponentPlayer}} is awaiting your move...</p>
+                   </td>
+               </tr>
+               <tr><td colspan="2"><div style="hbox no-inset"><a  href="{{pathFor route='logout'}}"><img src="/img/close-icon.png" style="panel"/> Quit</a></div></td></tr>
+            </table>
+        </div>
+        <div class="hbox full-width full-height">
+            <br/>
+            <div class="panel">
+            <br/>
+            </div>
+            
+            <div class="panel shadow-box">
+                
+            </div> 
+            <div class="panel">
+            <br/>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -335,26 +384,17 @@
 <template name="myGameResults">
     {{> navigation}}
     <div class="base-layout">
-	    <h1>Game: {{gameName}}</h1>
-	    <h2>Results!</h2>
-	    <p class="winner">Winner: {{winner}}</p>
-	    <p class="winner">Winning Score: {{winScore}}</p>
-	    <ul>
-	    {{#each losers}}
-	        {{> loser}}
-	    {{/each}}
-	    </ul>
-	    <form>
-	        <input type="submit" value="Back to lobby"/>
-	    </form>
+        <h1>Game: {{gameName}}</h1>
+        <h2>Results!</h2>
+        <p class="winner">Winner: {{winner}}</p>
+        <p class="winner">Winning Move: {{winningMove}}</p>
+        <p class="loser">Loser: {{loser}}</p>
+        <p class="loser">Winning Move: {{losingMove}}</p>
+        <form>
+            <input type="submit" value="Back to lobby"/>
+        </form>
     </div>
 </template>
-
-<!-- Loser info Template -->
-<template name="loser">
-    <li>Name: {{name}} <ol><li>Score: {{score}}</li></ol></li>
-</template>
-
 
 
 <template name="gameOver">

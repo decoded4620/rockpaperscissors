@@ -54,17 +54,17 @@ Db = {
         },
         Player:function() {
             this._id            = null;
+            this.game_id        = null;
+            this.opponent_id    = null;
+            this.room_id        = null;
+            this.this_login     = null;
+            this.last_login     = null;
             this.elo            = 1000;
-            this.game_id        = 0;
-            this.opponent_id    = 0;
             this.wins           = 0;
             this.losses         = 0;
             this.rounds_won     = 0;
             this.rounds_lost    = 0;
             this.in_game        = false;
-            this.room_id        = null;
-            this.this_login     = null;
-            this.last_login     = null;
         },
         Game:function(){
             this._id            = null;
@@ -126,7 +126,7 @@ Db = {
          * wiping out the player's heartbeat record.
          */
         getMaxHeartbeatWaitTime:function(){
-            return 15000;
+            return 515000;
         },
         
         /**
@@ -433,76 +433,77 @@ Db = {
                     if(game != null){
                         console.log("Db.GameDB.joinGame - player and game are valid, playergame: " + player.game_id + ", game: " + game._id);
                         // if a new game or rejoin
-                        if(!player.game_id || player.game_id == game._id){
-                            
+                        if(player.game_id != null && player.game_id !==undefined && player.game_id !== game._id){
+                            console.log("Db.GameDB.joinGame - complete:  player already in a nother game, attempting to leave!");
+                            // leave any existing game
+                            this.leaveGame(player.game_id, playerId, playerToken);
+                        }
+                        else{
                             console.log("Db.GameDB.joinGame - Player is either in THIS game or no game:" + player.game_id);
-                            var existingPlayers = game.player_ids;
-                            var eLen = existingPlayers.length;
-                            console.log("Db.GameDB.joinGame - existing players are: " + existingPlayers);
-                            if(eLen == 0 || existingPlayers.indexOf(playerId) == -1){
-                                console.log("Db.GameDB.joinGame - player not in this game, joining");
-                                if(eLen < game.max_players){
+                        }
+                        
+                        var existingPlayers = game.player_ids;
+                        var eLen = existingPlayers.length;
+                        console.log("Db.GameDB.joinGame - existing players are: " + existingPlayers);
+                        if(eLen == 0 || existingPlayers.indexOf(playerId) == -1){
+                            console.log("Db.GameDB.joinGame - player not in this game, joining");
+                            if(eLen < game.max_players){
+                                
+                                if(game.game_owner == null){
+                                    console.log("Db.GameDB.joinGame - setting game owner: " + playerId);
+                                    game.game_owner = playerId;
+                                }
+                                
+                                // add a score for this player
+                                game.scores[playerId] = 0;
+                                game.player_ids[game.player_ids.length] = playerId;
+                                
+                                if(game.player_ids.length >= game.min_players){
+                                    // set game 'in progress' for all players
+                                    // who are 'waiting'
+                                    game.status         = Db.Constants.GameStatus.IN_PROGRESS;
+                                    game.player_idx     = 0;
+                                    game.current_player = game.player_ids[game.player_idx];
                                     
-                                    if(game.game_owner == null){
-                                        console.log("Db.GameDB.joinGame - setting game owner: " + playerId);
-                                        game.game_owner = playerId;
-                                    }
+                                    // leave the lobby once the game starts.
+                                    Db.RoomDB.leaveRoom('lobby', playerId, playerToken);
                                     
-                                    // add a score for this player
-                                    game.scores[playerId] = 0;
-                                    game.player_ids[game.player_ids.length] = playerId;
+                                    console.log("All Players have arrived, current turn is for: " + game.current_player);
+                                }
+                                else{
+                                    game.status = Db.Constants.GameStatus.WAITING_FOR_PLAYERS; 
+                                    console.log("Waiting for more players to arrive");
+                                }
+                                
+                                // save it to make it 'react'
+                                if(this.saveGame(game)){
+                                    // save the player's game
+                                    player.game_id  = game._id;
+                                    player.in_game  = true;
                                     
-                                    if(game.player_ids.length >= game.min_players){
-                                        // set game 'in progress' for all players
-                                        // who are 'waiting'
-                                        game.status         = Db.Constants.GameStatus.IN_PROGRESS;
-                                        game.player_idx     = 0;
-                                        game.current_player = game.player_ids[game.player_idx];
-                                        
-                                        // leave the lobby once the game starts.
-                                        Db.RoomDB.leaveRoom('lobby', playerId, playerToken);
-                                        
-                                        console.log("All Players have arrived, current turn is for: " + game.current_player);
+                                    if(Db.PlayerDB.savePlayer(player)){
+                                        console.log("Db.GameDB.joinGame - complete:  save success! game status: " + Db.Constants.GameStatus.getLabel(game.status));
+                                        return {status:HTTPStatusCodes.OK, game:game };
                                     }
                                     else{
-                                        game.status = Db.Constants.GameStatus.WAITING_FOR_PLAYERS; 
-                                        console.log("Waiting for more players to arrive");
+                                        return {status:HTTPStatusCodes.INTERNAL_ERROR };
                                     }
-                                    
-                                    // save it to make it 'react'
-                                    if(this.saveGame(game)){
-                                        // save the player's game
-                                        player.game_id  = game._id;
-                                        player.in_game  = true;
-                                        
-                                        if(Db.PlayerDB.savePlayer(player)){
-                                            console.log("Db.GameDB.joinGame - complete:  save success! game status: " + Db.Constants.GameStatus.getLabel(game.status));
-                                            return {status:HTTPStatusCodes.OK, game:game };
-                                        }
-                                        else{
-                                            return {status:HTTPStatusCodes.INTERNAL_ERROR };
-                                        }
-                                    }
+                                }
 
-                                    console.log("Db.GameDB.joinGame - complete:  save failed!");
-                                    return {status:HTTPStatusCodes.INTERNAL_ERROR, errorCode:GameErrorCodes.GAME_SAVE_ERROR};
-                                
-                                }
-                                else
-                                {
-                                    console.log("Db.GameDB.joinGame - complete:  game is full!");
-                                    return {status:HTTPStatusCodes.INTERNAL_ERROR, errorCode:GameErrorCodes.GAME_FULL };
-                                }
+                                console.log("Db.GameDB.joinGame - complete:  save failed!");
+                                return {status:HTTPStatusCodes.INTERNAL_ERROR, errorCode:GameErrorCodes.GAME_SAVE_ERROR};
+                            
                             }
-                            else{
-                                // already joined
-                                console.log("Db.GameDB.joinGame - complete:  already joined!");
-                                return {status:HTTPStatusCodes.OK, game:game }
+                            else
+                            {
+                                console.log("Db.GameDB.joinGame - complete:  game is full!");
+                                return {status:HTTPStatusCodes.INTERNAL_ERROR, errorCode:GameErrorCodes.GAME_FULL };
                             }
                         }
                         else{
-                            console.log("Db.GameDB.joinGame - complete:  player already in a nother game!");
-                            return {status:HTTPStatusCodes.INTERNAL_ERROR, errorCode:GameErrorCodes.PLAYER_IN_OTHER_GAME};
+                            // already joined
+                            console.log("Db.GameDB.joinGame - complete:  already joined!");
+                            return {status:HTTPStatusCodes.OK, game:game }
                         }
                     }
                     else{
@@ -588,7 +589,7 @@ Db = {
                         }
                     }
                     else{
-                        console.log("Db.GameDB.leaveGame - complete: couldnt find game: " + game._id + " for player " + playerId);
+                        console.log("Db.GameDB.leaveGame - complete: couldnt find game" + gameId + " for player " + playerId);
                         return {status:HTTPStatusCodes.NOT_FOUND, errorCode:GameErrorCodes.GAME_NOT_FOUND }
                     }
                 }

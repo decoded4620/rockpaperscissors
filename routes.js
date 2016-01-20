@@ -202,8 +202,18 @@ Router.route('/game/:gameId', function(){
 });
 
 Router.route('game/:gameId/results', function(){
-    this.render("myGameResults");
-    Client.restartHeartbeat(10000);
+    
+    game = Db.GameDB.findGame(this.params.gameId);
+    
+    if(game != null){
+        this.render("myGameResults");
+        
+        // clear any game session keys
+        Client.clearSessionKeys([SessionKeys.CURRENT_GAME_NAME, SessionKeys.CURRENT_GAME_ID, SessionKeys.WAIT_FOR_GAME_ID, SessionKeys.CURRENT_TURN_PLAYER]);
+        
+        // restart the hb.
+        Client.restartHeartbeat(10000);
+    }
 });
 
 Router.route('/leaderboard', function(){
@@ -266,6 +276,7 @@ Router.route('/game/:gameId/:move', function(){
                 
                 if(result.winnerId != null && result.winnerId !== undefined){
                    Client.stopMoveWait();
+
                    Router.go('/game/' + gameId + '/results'); 
                 }
                 else{

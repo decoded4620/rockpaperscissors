@@ -113,10 +113,6 @@ if(Meteor.isClient){
                         if(Db.GameDB.isComplete(game)){
                             // stop waiting for the move and go to 'my turn'
                             Client.stopMoveWait();
-                            
-                            // clear any game session keys
-                            Client.clearSessionKeys([SessionKeys.CURRENT_GAME_NAME, SessionKeys.CURRENT_GAME_ID, SessionKeys.WAIT_FOR_GAME_ID, SessionKeys.CURRENT_TURN_PLAYER])
-                            
                             // back to default room
                             Router.go('/game/' + game._id + '/results');
                         }

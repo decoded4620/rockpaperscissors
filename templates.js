@@ -154,6 +154,27 @@ if (Meteor.isClient) {
             console.log("Leaderboard players: ");
             console.log(lbPlayers);
             return lbPlayers;
+        },
+        // only returns games that are ready for players to join. as soon as all players are there,
+        gamesInProgress:function(){
+            return Db.Collections.Games.find({$or:[{status:Db.Constants.GameStatus.IN_PROGRESS}, {status:Db.Constants.GameStatus.WAITING_FOR_PLAYERS}]}, {limit:20, sort:{status:1}});
+        },
+        hasGamesInProgress:function(){
+            return Db.Collections.Games.find({$or:[{status:Db.Constants.GameStatus.IN_PROGRESS}, {status:Db.Constants.GameStatus.WAITING_FOR_PLAYERS}]}).fetch().length > 0;
+        },
+        // only returns games that are ready for players to join. as soon as all players are there,
+        gamesCompleted:function(){
+            return Db.Collections.Games.find({status:Db.Constants.GameStatus.COMPLETE});
+        },
+        hasCompletedGames:function(){
+            return Db.Collections.Games.find({status:Db.Constants.GameStatus.COMPLETE}).fetch().length > 0;
+        },
+        // only returns games that are ready for players to join. as soon as all players are there,
+        gamesAbandoned:function(){
+            return Db.Collections.Games.find({status:Db.Constants.GameStatus.ABANDONED});
+        },
+        hasAbandonedGames:function(){
+            return Db.Collections.Games.find({status:Db.Constants.GameStatus.ABANDONED}).fetch().length > 0;
         }
     });
     
@@ -165,8 +186,8 @@ if (Meteor.isClient) {
             event.preventDefault();
             
             var gameName    = event.target.gameName.value;
-            var minPlayers  = event.target.minPlayers.value;
-            var maxTurns    = event.target.maxTurns.value;
+            var minPlayers  = 2;
+            var maxTurns    = 1;
             
             var gameId      = gameName.toLowerCase().replace(/ /g, "");
             
@@ -222,28 +243,50 @@ if (Meteor.isClient) {
  
     Template.theirProfile.helpers(playerHelpers); 
     
-    Template.inGameTheirTurn.helpers({
-        opponent:function(){
+    
+    
+    gameTurnHelpers = {
+        opponentPlayer:function(){
             var game = Db.GameDB.findGame(Session.get(SessionKeys.CURRENT_GAME_ID));
             if(game != null){
-                return game.current_player;
+                console.log("getOPponentPlayer: " + game.player_ids)
+                for(var i = 0; i < game.player_ids.length; ++i){
+                    if(game.player_ids[i] == Session.get(SessionKeys.PLAYER_ID)){
+                        continue;
+                    }
+                    
+                    return game.player_ids[i];
+                }
             }
-            
             return "";
+        },
+        playerName:function(){
+            return Session.get(SessionKeys.PLAYER_ID);
         },
         gameName:function(){
             return Session.get(SessionKeys.CURRENT_GAME_NAME);
         }
-    });
-    
-    Template.inGameMyTurn.helpers({
-        gameName:function(){
-            return Session.get(SessionKeys.CURRENT_GAME_NAME);
-        }
-    });
+    };
+    Template.inGameTheirTurn.helpers(gameTurnHelpers);
+    Template.inGameMyTurn.helpers(gameTurnHelpers);
     
     Template.inGameMyTurn.events({
-        
+        'click img':function(event){
+            event.preventDefault();
+            
+            var gameId = Session.get(SessionKeys.CURRENT_GAME_ID);
+            if(gameId != null && gameId !== undefined){
+                switch(event.currentTarget.id){
+                    case 'rock':
+                    case 'paper':
+                    case 'scissors':
+                        Router.go('/game/' + gameId + '/' + event.currentTarget.id.charAt(0));
+                    break;
+                    default:
+                        break;
+                }
+            }
+        },
         'submit form':function(event){
             
             console.log("inGameMyTurn Submit Form!");
@@ -276,6 +319,14 @@ if (Meteor.isClient) {
            return [{lname:"Bobby", lscore:69}];
        }
     });
+    
+    Template.myGameResults.helpers({
+        results:function(){
+            console.log("results:");
+            console.log(game.results);
+            return game.results;
+        }
+    });
     Template.myGameResults.events({ 
         'submit form':function(event){
             console.log("back to default room: " + Db.RoomDB.DEFAULT_ROOM_ID);
@@ -284,16 +335,6 @@ if (Meteor.isClient) {
             Router.go('/rooms/' + Db.RoomDB.DEFAULT_ROOM_ID);
         }
     })
-    Template.loser.helpers({
-        name:function(){
-            console.log(this);
-            return this.lname;
-        },
-        score:function(){
-            console.log(this);
-            return this.lscore;
-        }
-    });
   
     Template.gameAbandoned.helpers(gameHelpers);
     Template.gameComplete.helpers(gameHelpers);

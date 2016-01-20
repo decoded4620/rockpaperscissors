@@ -145,8 +145,8 @@ if (Meteor.isServer) {
       }
     });
   // insure that the db stays clean
-  Server.mgInterval     = Meteor.setInterval(Server.markGames, 20000);
-  Server.rmgInterval    = Meteor.setInterval(Server.removeMarkedGames, 75000);
+  Server.mgInterval     = Meteor.setInterval(Server.markGames, 120000);
+  Server.rmgInterval    = Meteor.setInterval(Server.removeMarkedGames, 175000);
     
 }
 // code runs on both
